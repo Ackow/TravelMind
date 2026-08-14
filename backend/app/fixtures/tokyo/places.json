@@ -1,0 +1,154 @@
+{
+  "places": [
+    {
+      "id": "tm_place_sensoji",
+      "name": "浅草寺",
+      "localized_name": "浅草寺",
+      "categories": ["temple", "attraction"],
+      "address": "東京都台東区浅草2丁目3-1",
+      "location": {"latitude": 35.7148, "longitude": 139.7967},
+      "rating": 4.6,
+      "rating_count": 10000,
+      "estimated_visit_minutes": 90,
+      "indoor_outdoor": "outdoor",
+      "opening_periods": [
+        {"day_of_week": 1, "open_time": "06:00", "close_time": "17:00", "closed": false},
+        {"day_of_week": 2, "open_time": "06:00", "close_time": "17:00", "closed": false},
+        {"day_of_week": 3, "open_time": "06:00", "close_time": "17:00", "closed": false},
+        {"day_of_week": 4, "open_time": "06:00", "close_time": "17:00", "closed": false},
+        {"day_of_week": 5, "open_time": "06:00", "close_time": "17:00", "closed": false},
+        {"day_of_week": 6, "open_time": "06:00", "close_time": "17:00", "closed": false},
+        {"day_of_week": 7, "open_time": "06:00", "close_time": "17:00", "closed": false}
+      ],
+      "special_opening_periods": [],
+      "admission": {"amount": 0, "currency": "JPY"},
+      "tags": ["历史", "城市漫步"],
+      "reservation_required": false,
+      "accessible": true,
+      "website_url": null,
+      "source": {
+        "provider": "mock",
+        "source_id": "mock-sensoji",
+        "source_url": null,
+        "fetched_at": "2026-09-30T00:00:00Z",
+        "expires_at": null,
+        "data_quality": "mock"
+      }
+    },
+    {
+      "id": "tm_place_ueno_park",
+      "name": "上野公园",
+      "categories": ["park", "attraction"],
+      "location": {"latitude": 35.7141, "longitude": 139.7741},
+      "rating": 4.4,
+      "estimated_visit_minutes": 90,
+      "indoor_outdoor": "outdoor",
+      "admission": {"amount": 0, "currency": "JPY"},
+      "tags": ["公园", "城市漫步"],
+      "source": {"provider": "mock", "source_id": "mock-ueno-park", "source_url": null, "fetched_at": "2026-09-30T00:00:00Z", "expires_at": null, "data_quality": "mock"}
+    },
+    {
+      "id": "tm_place_tokyo_national_museum",
+      "name": "东京国立博物馆",
+      "categories": ["museum"],
+      "location": {"latitude": 35.7188, "longitude": 139.7765},
+      "rating": 4.6,
+      "estimated_visit_minutes": 150,
+      "indoor_outdoor": "indoor",
+      "opening_periods": [
+        {"day_of_week": 1, "open_time": null, "close_time": null, "closed": true},
+        {"day_of_week": 2, "open_time": "09:30", "close_time": "17:00", "closed": false}
+      ],
+      "admission": {"amount": 1000, "currency": "JPY"},
+      "tags": ["博物馆", "历史", "雨天"],
+      "source": {"provider": "mock", "source_id": "mock-tokyo-national-museum", "source_url": null, "fetched_at": "2026-09-30T00:00:00Z", "expires_at": null, "data_quality": "mock"}
+    },
+    {
+      "id": "tm_place_akihabara",
+      "name": "秋叶原",
+      "categories": ["anime", "neighborhood"],
+      "location": {"latitude": 35.6984, "longitude": 139.7731},
+      "rating": 4.5,
+      "estimated_visit_minutes": 180,
+      "indoor_outdoor": "mixed",
+      "admission": {"amount": 0, "currency": "JPY"},
+      "tags": ["动漫", "城市漫步"],
+      "source": {"provider": "mock", "source_id": "mock-akihabara", "source_url": null, "fetched_at": "2026-09-30T00:00:00Z", "expires_at": null, "data_quality": "mock"}
+    },
+    {
+      "id": "tm_place_anime_center",
+      "name": "东京动漫中心",
+      "categories": ["anime", "entertainment"],
+      "location": {"latitude": 35.7088, "longitude": 139.6656},
+      "rating": 4.2,
+      "estimated_visit_minutes": 90,
+      "indoor_outdoor": "indoor",
+      "admission": {"amount": 0, "currency": "JPY"},
+      "tags": ["动漫", "展览", "雨天"],
+      "source": {"provider": "mock", "source_id": "mock-anime-center", "source_url": null, "fetched_at": "2026-09-30T00:00:00Z", "expires_at": null, "data_quality": "mock"}
+    },
+    {
+      "id": "tm_place_meiji_shrine",
+      "name": "明治神宫",
+      "categories": ["shrine", "attraction"],
+      "location": {"latitude": 35.6764, "longitude": 139.6993},
+      "rating": 4.6,
+      "estimated_visit_minutes": 120,
+      "indoor_outdoor": "outdoor",
+      "admission": {"amount": 0, "currency": "JPY"},
+      "tags": ["历史", "城市漫步"],
+      "source": {"provider": "mock", "source_id": "mock-meiji-shrine", "source_url": null, "fetched_at": "2026-09-30T00:00:00Z", "expires_at": null, "data_quality": "mock"}
+    },
+    {
+      "id": "tm_place_shibuya_sky",
+      "name": "SHIBUYA SKY",
+      "categories": ["viewpoint", "attraction"],
+      "location": {"latitude": 35.6585, "longitude": 139.7013},
+      "rating": 4.6,
+      "estimated_visit_minutes": 90,
+      "indoor_outdoor": "mixed",
+      "admission": {"amount": 2500, "currency": "JPY"},
+      "tags": ["日落", "城市景观"],
+      "reservation_required": true,
+      "source": {"provider": "mock", "source_id": "mock-shibuya-sky", "source_url": null, "fetched_at": "2026-09-30T00:00:00Z", "expires_at": null, "data_quality": "mock"}
+    },
+    {
+      "id": "tm_place_teamlab",
+      "name": "teamLab Borderless",
+      "categories": ["museum", "entertainment"],
+      "location": {"latitude": 35.6605, "longitude": 139.7292},
+      "rating": 4.7,
+      "estimated_visit_minutes": 150,
+      "indoor_outdoor": "indoor",
+      "admission": {"amount": 4200, "currency": "JPY"},
+      "tags": ["数字艺术", "雨天"],
+      "reservation_required": true,
+      "source": {"provider": "mock", "source_id": "mock-teamlab", "source_url": null, "fetched_at": "2026-09-30T00:00:00Z", "expires_at": null, "data_quality": "mock"}
+    },
+    {
+      "id": "tm_place_tokyo_station",
+      "name": "东京站",
+      "categories": ["neighborhood", "food"],
+      "location": {"latitude": 35.6812, "longitude": 139.7671},
+      "rating": 4.4,
+      "estimated_visit_minutes": 120,
+      "indoor_outdoor": "mixed",
+      "admission": {"amount": 0, "currency": "JPY"},
+      "tags": ["美食", "建筑"],
+      "source": {"provider": "mock", "source_id": "mock-tokyo-station", "source_url": null, "fetched_at": "2026-09-30T00:00:00Z", "expires_at": null, "data_quality": "mock"}
+    },
+    {
+      "id": "tm_place_ghibli_museum",
+      "name": "三鹰之森吉卜力美术馆",
+      "categories": ["anime", "museum"],
+      "location": {"latitude": 35.6962, "longitude": 139.5704},
+      "rating": 4.7,
+      "estimated_visit_minutes": 150,
+      "indoor_outdoor": "indoor",
+      "admission": {"amount": 1000, "currency": "JPY"},
+      "tags": ["动漫", "美术馆", "雨天"],
+      "reservation_required": true,
+      "source": {"provider": "mock", "source_id": "mock-ghibli-museum", "source_url": null, "fetched_at": "2026-09-30T00:00:00Z", "expires_at": null, "data_quality": "mock"}
+    }
+  ]
+}

@@ -398,13 +398,10 @@ local_transport | shopping | contingency | other
 | `items` | `BudgetItem[]` | 是 | 全部明细 |
 | `totals_by_category` | object | 是 | key 为 `BudgetCategory`，value 为 `Money` |
 | `planned_total` | `Money` | 是 | 明细求和，不由 LLM 填写 |
-| `remaining` | `Money` | 是 | 允许为负数时不能使用 Money；见下一项 |
 | `remaining_amount` | integer | 是 | 最小单位，可为负 |
 | `currency` | string | 是 | 统一展示币种 |
 | `within_budget` | boolean | 是 | 程序计算 |
 | `exchange_rates` | object | 是 | 原币种到展示币种的汇率及时间；无换汇则 `{}` |
-
-`remaining` 为了避免负数语义冲突建议从首版对象中删除，统一使用 `remaining_amount + currency`。实现时以这两个字段为权威。
 
 ### 5.7 `Itinerary`
 

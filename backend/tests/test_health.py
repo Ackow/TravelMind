@@ -9,11 +9,7 @@ def test_liveness() -> None:
     response = client.get("/health/live")
 
     assert response.status_code == 200
-    assert response.json() == {
-        "status": "ok",
-        "service": "travelmind-api",
-        "version": "0.1.0"
-    }
+    assert response.json() == {"status": "ok", "service": "travelmind-api", "version": "0.1.0"}
 
 
 def test_readiness() -> None:

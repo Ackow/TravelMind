@@ -2,7 +2,7 @@
 
 TravelMind 是一个动态旅行规划 Agent。它会根据用户需求、实时信息、预算和行程约束生成旅行计划，并在天气变化或用户提出新要求后进行动态重规划。
 
-当前仓库处于 **阶段 0：工程基线**。这一阶段只验证前后端工程能够安装、启动、测试和相互通信，不包含数据库、LangGraph、LLM、MCP 或真实旅行数据 API。
+当前仓库已完成 **阶段 1：领域模型与固定样例数据**。在阶段 0 工程基线上，后端已经具备旅行请求、天气、地点、路线与行程领域模型，以及可重复加载的东京固定样例和空白行程生成脚本；暂不包含数据库、规划算法、LangGraph、LLM、MCP 或真实旅行数据 API。
 
 ## 技术栈
 
@@ -30,6 +30,9 @@ TravelMind/
 │  ├─ app/
 │  │  ├─ api/routes/         HTTP 路由
 │  │  ├─ core/               配置等基础能力
+│  │  ├─ domain/             阶段 1 领域模型
+│  │  ├─ fixtures/           固定样例与统一加载器
+│  │  ├─ scripts/            可执行教学脚本
 │  │  └─ main.py             FastAPI 应用入口
 │  ├─ tests/                 后端测试
 │  ├─ .env.example           后端环境变量示例
@@ -206,6 +209,7 @@ uvicorn app.main:app --reload --port 8000
 python -m pytest
 ruff check app tests
 ruff format --check app tests
+python -m app.scripts.build_fixture_itinerary
 ```
 
 ### 前端
@@ -279,6 +283,17 @@ pnpm --version
 - [ ] 仓库中不存在真实密钥。
 - [ ] 新开发者只按照本 README 就能完成安装、启动和验证。
 
+## 阶段 1 验收结果
+
+- [x] 领域模型不依赖 Web、数据库、Agent 或 Provider SDK。
+- [x] 合法、非法和边界输入均有自动化测试。
+- [x] 东京样例包含 5 天天气、10 个 POI 和 20 条有向路线。
+- [x] 样例覆盖室内、户外、mixed、预约和闭馆差异。
+- [x] 空白行程脚本输出连续 5 天的合法 JSON，并可由 `Itinerary` 再次读取。
+- [x] 后端测试、Ruff、前端 lint 和前端生产构建均通过。
+
+详细步骤与完整清单见 [阶段 1 教程](docs/阶段1-领域模型与固定样例数据教程.md)。
+
 ## 项目文档
 
 - [项目说明](docs/项目说明.md)
@@ -288,10 +303,10 @@ pnpm --version
 
 ## 当前不包含的能力
 
-以下内容不属于阶段 0：
+以下内容不属于阶段 1：
 
-- 旅行领域模型
 - 数据库和迁移
+- 规划算法与约束引擎
 - 天气、POI 与路线 Provider
 - LLM 和 Tool Calling
 - LangGraph 工作流

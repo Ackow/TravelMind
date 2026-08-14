@@ -27,5 +27,4 @@ def create_app() -> FastAPI:
     return application
 
 
-
 app = create_app()

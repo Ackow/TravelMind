@@ -1,0 +1,32 @@
+{
+  "cells": [
+    {"origin_place_id":"tm_place_sensoji","destination_place_id":"tm_place_ueno_park","mode":"public_transit","status":"ok","duration_minutes":18,"distance_meters":2600,"walking_meters":550,"cost":{"amount":180,"currency":"JPY"}},
+    {"origin_place_id":"tm_place_ueno_park","destination_place_id":"tm_place_akihabara","mode":"public_transit","status":"ok","duration_minutes":15,"distance_meters":2100,"walking_meters":420,"cost":{"amount":170,"currency":"JPY"}},
+    {"origin_place_id":"tm_place_ueno_park","destination_place_id":"tm_place_tokyo_national_museum","mode":"walking","status":"ok","duration_minutes":8,"distance_meters":600,"walking_meters":600,"cost":{"amount":0,"currency":"JPY"}},
+    {"origin_place_id":"tm_place_tokyo_national_museum","destination_place_id":"tm_place_akihabara","mode":"public_transit","status":"ok","duration_minutes":20,"distance_meters":3200,"walking_meters":650,"cost":{"amount":180,"currency":"JPY"}},
+    {"origin_place_id":"tm_place_akihabara","destination_place_id":"tm_place_tokyo_station","mode":"public_transit","status":"ok","duration_minutes":12,"distance_meters":2500,"walking_meters":420,"cost":{"amount":150,"currency":"JPY"}},
+    {"origin_place_id":"tm_place_tokyo_station","destination_place_id":"tm_place_teamlab","mode":"public_transit","status":"ok","duration_minutes":25,"distance_meters":5200,"walking_meters":700,"cost":{"amount":210,"currency":"JPY"}},
+    {"origin_place_id":"tm_place_teamlab","destination_place_id":"tm_place_shibuya_sky","mode":"public_transit","status":"ok","duration_minutes":28,"distance_meters":6100,"walking_meters":750,"cost":{"amount":220,"currency":"JPY"}},
+    {"origin_place_id":"tm_place_shibuya_sky","destination_place_id":"tm_place_meiji_shrine","mode":"public_transit","status":"ok","duration_minutes":18,"distance_meters":2400,"walking_meters":650,"cost":{"amount":150,"currency":"JPY"}},
+    {"origin_place_id":"tm_place_meiji_shrine","destination_place_id":"tm_place_anime_center","mode":"public_transit","status":"ok","duration_minutes":22,"distance_meters":4600,"walking_meters":700,"cost":{"amount":180,"currency":"JPY"}},
+    {"origin_place_id":"tm_place_anime_center","destination_place_id":"tm_place_ghibli_museum","mode":"public_transit","status":"ok","duration_minutes":35,"distance_meters":12500,"walking_meters":900,"cost":{"amount":320,"currency":"JPY"}},
+    {"origin_place_id":"tm_place_ueno_park","destination_place_id":"tm_place_sensoji","mode":"public_transit","status":"ok","duration_minutes":17,"distance_meters":2600,"walking_meters":500,"cost":{"amount":180,"currency":"JPY"}},
+    {"origin_place_id":"tm_place_akihabara","destination_place_id":"tm_place_ueno_park","mode":"public_transit","status":"ok","duration_minutes":16,"distance_meters":2100,"walking_meters":460,"cost":{"amount":170,"currency":"JPY"}},
+    {"origin_place_id":"tm_place_tokyo_national_museum","destination_place_id":"tm_place_ueno_park","mode":"walking","status":"ok","duration_minutes":8,"distance_meters":600,"walking_meters":600,"cost":{"amount":0,"currency":"JPY"}},
+    {"origin_place_id":"tm_place_akihabara","destination_place_id":"tm_place_tokyo_national_museum","mode":"public_transit","status":"ok","duration_minutes":21,"distance_meters":3200,"walking_meters":700,"cost":{"amount":180,"currency":"JPY"}},
+    {"origin_place_id":"tm_place_tokyo_station","destination_place_id":"tm_place_akihabara","mode":"public_transit","status":"ok","duration_minutes":11,"distance_meters":2500,"walking_meters":400,"cost":{"amount":150,"currency":"JPY"}},
+    {"origin_place_id":"tm_place_teamlab","destination_place_id":"tm_place_tokyo_station","mode":"public_transit","status":"ok","duration_minutes":24,"distance_meters":5200,"walking_meters":680,"cost":{"amount":210,"currency":"JPY"}},
+    {"origin_place_id":"tm_place_shibuya_sky","destination_place_id":"tm_place_teamlab","mode":"public_transit","status":"ok","duration_minutes":30,"distance_meters":6100,"walking_meters":800,"cost":{"amount":220,"currency":"JPY"}},
+    {"origin_place_id":"tm_place_meiji_shrine","destination_place_id":"tm_place_shibuya_sky","mode":"public_transit","status":"ok","duration_minutes":17,"distance_meters":2400,"walking_meters":620,"cost":{"amount":150,"currency":"JPY"}},
+    {"origin_place_id":"tm_place_anime_center","destination_place_id":"tm_place_meiji_shrine","mode":"public_transit","status":"ok","duration_minutes":23,"distance_meters":4600,"walking_meters":720,"cost":{"amount":180,"currency":"JPY"}},
+    {"origin_place_id":"tm_place_ghibli_museum","destination_place_id":"tm_place_anime_center","mode":"public_transit","status":"ok","duration_minutes":36,"distance_meters":12500,"walking_meters":950,"cost":{"amount":320,"currency":"JPY"}}
+  ],
+  "source": {
+    "provider": "mock",
+    "source_id": "tokyo-route-matrix-v1",
+    "source_url": null,
+    "fetched_at": "2026-09-30T00:00:00Z",
+    "expires_at": null,
+    "data_quality": "mock"
+  }
+}
