@@ -140,3 +140,15 @@ class FeedbackRecord(ApplicationModel):
     clarification_question: str | None  # 澄清问题
     planning_run_id: UUID | None  # 关联规划任务 ID
     created_at: datetime
+
+
+class LLMCallRecord(ApplicationModel):
+    """记录每一次大模型调用的审计流水。"""
+    id: UUID
+    trip_id: UUID
+    task: str  # e.g. "parse_feedback", "rerank_places", "generate_summary"
+    model: str
+    prompt_tokens: int
+    completion_tokens: int
+    latency_ms: int
+    created_at: datetime

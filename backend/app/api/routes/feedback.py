@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Response, status
+from fastapi import APIRouter, Response, status, Request
 
 from app.api.dependencies import ClockDep, FactsFactoryDep, RepositoryDep
 from app.api.schemas import (
@@ -28,6 +28,7 @@ def create_feedback_endpoint(
     trip_id: UUID,
     payload: FeedbackCreateRequest,
     response: Response,
+    request: Request,
     repository: RepositoryDep,
     clock: ClockDep,
     facts_factory: FactsFactoryDep,
@@ -37,6 +38,7 @@ def create_feedback_endpoint(
     如果反馈缺少明确操作，则返回 200 并要求用户澄清；
     否则正常返回 202 和可选的重新规划任务。
     """
+    llm_client = getattr(request.app.state, "llm_client", None)
 
     feedback, run = submit_feedback(
         trip_id=trip_id,
@@ -47,6 +49,7 @@ def create_feedback_endpoint(
         repository=repository,
         clock=clock,
         facts_factory=facts_factory,
+        llm_client=llm_client,
     )
 
     if feedback.requires_clarification:

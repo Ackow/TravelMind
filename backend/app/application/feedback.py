@@ -7,6 +7,7 @@ from app.application.models import FeedbackRecord, PlanningRunRecord, PlanningRu
 from app.application.planning import start_planning
 from app.application.repository import TravelRepository
 from app.domain.trip import TripRequest
+from app.agent.llm_client import LLMClient
 
 
 def _append_unique_name(values: list[str], value: str) -> None:
@@ -48,6 +49,7 @@ def submit_feedback(
     repository: TravelRepository,
     clock: Clock,
     facts_factory: FactsFactory,
+    llm_client: LLMClient | None = None,
 ) -> tuple[FeedbackRecord, PlanningRunRecord | None]:
     # 校验旅行存在且版本未被其他操作抢先修改
     trip = repository.get_trip(trip_id)
@@ -57,8 +59,24 @@ def submit_feedback(
         raise ApplicationError("VERSION_CONFLICT", "计划版本已经变化", 409)
 
     now = clock.now()
-    # 没有可执行的结构化操作时，需要先向用户追问澄清
-    requires_clarification = not operations
+    # 若前端未传结构化操作，但提供了自然语言且配置了 LLM，则由 LLM 解析
+    affected_Day_indices: list[int] = []
+    if not operations and message.strip() and llm_client is not None:
+        from app.agent.feedback_parser import FeedbackParser
+
+        parser = FeedbackParser(llm_client)
+        parsed = parser.parse(message=message, trip_request=trip.request)
+
+        operations = [op.model_dump(mode="python") for op in parsed.operations]
+        requires_clarification = parsed.requires_clarification
+        clarification_question = parsed.clarification_question
+        affected_Day_indices = parsed.affected_day_indices
+    else:
+        requires_clarification = not operations
+        clarification_question = (
+            "请从页面选项中明确要修改的约束" if requires_clarification else None
+        )
+
     feedback = FeedbackRecord(
         id=uuid4(),
         trip_id=trip.id,
@@ -69,12 +87,12 @@ def submit_feedback(
         affected_activity_ids=[],
         global_scope=True,
         requires_clarification=requires_clarification,
-        clarification_question=(
-            "请从页面选项中明确要修改的约束" if requires_clarification else None
-        ),
+        clarification_question=clarification_question,
         planning_run_id=None,
         created_at=now,
     )
+
+    # 如果解析判定需要澄清，或者用户没有勾选自动重规划，则保存反馈后直接返回
     if requires_clarification or not auto_start_replanning:
         repository.add_feedback(feedback)
         return feedback, None
