@@ -1,0 +1,243 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(18, 63, 58, 0.45);
+  backdrop-filter: blur(4px);
+  animation: fadeIn 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal {
+  position: relative;
+  width: 100%;
+  max-width: 540px;
+  background: var(--surface, #ffffff);
+  border-radius: 16px;
+  box-shadow: var(--card-shadow, 0 20px 48px rgba(18, 63, 58, 0.18));
+  border: 1px solid var(--line, #e5e7eb);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: scaleIn 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--line-soft, #f0f2f1);
+}
+
+.headerTitle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--coral-badge, #ea580c);
+  background: var(--coral-soft, #ffedd5);
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.headerTitle h3 {
+  font-size: 1.05rem;
+  font-weight: 750;
+  color: var(--ink, #102e2a);
+  margin: 0;
+}
+
+.closeBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--muted, #6b7280);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+
+.closeBtn:hover {
+  background: var(--line-soft, #f3f4f6);
+  color: var(--ink, #102e2a);
+}
+
+.content {
+  padding: 20px 24px;
+}
+
+.desc {
+  font-size: 0.88rem;
+  color: var(--muted, #5b706b);
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.breakdownTable {
+  background: var(--canvas, #f9fafb);
+  border: 1px solid var(--line, #e5e7eb);
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 0.86rem;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--muted, #4b5563);
+}
+
+.totalRow {
+  margin-top: 6px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--line, #d1d5db);
+  font-weight: 700;
+  color: var(--ink, #102e2a);
+}
+
+.highlightRed {
+  color: var(--coral, #f95738);
+  font-size: 0.98rem;
+  font-weight: 750;
+}
+
+.limitRow {
+  font-weight: 600;
+  color: var(--muted, #6b7280);
+}
+
+.limitValue {
+  color: var(--success, #059669);
+  font-size: 0.92rem;
+  font-weight: 750;
+}
+
+.conflictList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.conflictCard {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.conflictCardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.conflictCardHeader strong {
+  font-size: 0.92rem;
+  color: #991b1b;
+}
+
+.tagClosed {
+  font-size: 0.76rem;
+  color: #dc2626;
+  background: #fee2e2;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.conflictCard p {
+  font-size: 0.82rem;
+  color: #7f1d1d;
+  margin: 0;
+}
+
+.suggestionBox {
+  margin-top: 16px;
+  background: var(--success-soft, #f0fdf4);
+  border: 1px solid #bbf7d0;
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.suggestionBox strong {
+  display: block;
+  font-size: 0.86rem;
+  color: var(--success-dark, #166534);
+  margin-bottom: 4px;
+}
+
+.suggestionBox p {
+  font-size: 0.82rem;
+  color: var(--success-dark, #15803d);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 24px;
+  border-top: 1px solid var(--line-soft, #f0f2f1);
+  background: var(--canvas, #fafafa);
+}
+
+.cancelBtn {
+  padding: 9px 18px;
+  border-radius: 8px;
+  border: 1.5px solid var(--ink-secondary, #374151);
+  background: var(--surface, #ffffff);
+  color: var(--ink-secondary, #374151);
+  font-size: 0.88rem;
+  font-weight: 650;
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+
+.cancelBtn:hover {
+  background: var(--line-soft, #f3f4f6);
+}
+
+.applyBtn {
+  padding: 9px 20px;
+  border-radius: 8px;
+  border: none;
+  background: var(--success, #059669);
+  color: var(--surface, #ffffff);
+  font-size: 0.88rem;
+  font-weight: 650;
+  cursor: pointer;
+  transition: all 160ms ease;
+}
+
+.applyBtn:hover {
+  background: var(--success-dark, #047857);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}

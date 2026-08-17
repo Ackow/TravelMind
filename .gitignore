@@ -19,6 +19,8 @@ frontend/out/
 frontend/coverage/
 frontend/.env.local
 frontend/.env.*.local
+frontend/tsconfig.tsbuildinfo
+frontend/tests/
 
 # IDE
 .idea/
@@ -31,6 +33,5 @@ Thumbs.db
 
 # Logs
 *.log
-
 
 参考图/
