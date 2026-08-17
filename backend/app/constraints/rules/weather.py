@@ -16,8 +16,8 @@ class WeatherCompatibilityRule:
     数据时产生数据不完整警告。交通、入住等结构性活动不参与天气判断。
     """
 
-    code = ConstraintCode.WEATHER_MISMATCH
-    version = "1.0.0"
+    code = ConstraintCode.WEATHER_MISMATCH  # 规则编码
+    version = "1.0.0"  # 规则版本
 
     def check(
         self,

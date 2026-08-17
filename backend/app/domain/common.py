@@ -42,11 +42,13 @@ class DateRange(DomainModel):
     end_date: date  # 结束日期（仅年月日）
 
     @model_validator(mode="after")
+    # 校验日期区间：结束日期不能早于开始日期
     def validate_range(self) -> "DateRange":
         if self.end_date < self.start_date:
             raise ValueError("end_date must not be before start_date")
         return self
 
+    # 计算旅行天数（含首尾）
     @property
     def day_count(self) -> int:
         return (self.end_date - self.start_date).days + 1
@@ -75,6 +77,7 @@ class SourceRef(DomainModel):
     data_quality: DataQuality  # 数据质量等级
 
     @model_validator(mode="after")
+    # 校验时间戳必须带时区，且过期时间晚于抓取时间
     def validate_timestamps(self) -> "SourceRef":
         if self.fetched_at.tzinfo is None:
             raise ValueError("fetched_at must be timezone-aware")

@@ -31,7 +31,6 @@ class DietaryPreference(StrEnum):
     VEGETARIAN = "vegetarian"  # 素食
     VEGAN = "vegan"  # 纯素
     HALAL = "halal"  # 清真
-    KOSHER = "kosher"  # 犹太洁食
     GLUTEN_FREE = "gluten_free"  # 无麸质
     NO_PORK = "no_pork"  # 不吃猪肉
     NO_BEEF = "no_beef"  # 不吃牛肉

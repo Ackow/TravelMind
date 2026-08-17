@@ -1,11 +1,33 @@
-from fastapi import FastAPI
+from uuid import uuid4
+
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.errors import install_error_handlers
+from app.api.routes.feedback import router as feedback_router
 from app.api.routes.health import router as health_router
+from app.api.routes.manual_edits import router as manual_edits_router
+from app.api.routes.planning import router as planning_router
+from app.api.routes.plans import router as plans_router
+from app.api.routes.trips import router as trips_router
+from app.application.clock import Clock, SystemClock
+from app.application.facts import FactsFactory
+from app.application.repository import TravelRepository
 from app.core.config import get_settings
+from app.infrastructure.memory_repository import InMemoryTravelRepository
+from app.infrastructure.tokyo_facts_factory import TokyoFactsFactory
 
 
-def create_app() -> FastAPI:
+def create_app(
+    *,
+    repository: TravelRepository | None = None,
+    clock: Clock | None = None,
+    facts_factory: FactsFactory | None = None,
+) -> FastAPI:
+    """创建 FastAPI 应用实例。
+
+    支持通过依赖注入替换默认的内存仓库、时钟和事实工厂，便于测试与扩展。
+    """
     settings = get_settings()
 
     application = FastAPI(
@@ -13,16 +35,40 @@ def create_app() -> FastAPI:
         version=settings.app_version,
         description="TravelMind dynamic travel planning agent API",
     )
+    # 将核心依赖挂到 app.state，路由层通过 Depends 获取
+    application.state.repository = repository or InMemoryTravelRepository()
+    application.state.clock = clock or SystemClock()
+    application.state.facts_factory = facts_factory or TokyoFactsFactory()
 
+    @application.middleware("http")
+    async def request_id_middleware(request: Request, call_next):
+        # 为每个请求生成/透传 request_id，方便日志串联和问题排查
+        request_id = request.headers.get("X-Request-ID") or str(uuid4())
+        request.state.request_id = request_id
+        response = await call_next(request)
+        response.headers["X-Request-ID"] = request_id
+        return response
+
+    # 注册统一异常处理（业务异常 + 参数校验异常）
+    install_error_handlers(application)
+
+    # 配置跨域：前端开发地址可访问，并暴露自定义响应头
     application.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_origin_list,
         allow_credentials=False,
         allow_methods=["*"],
         allow_headers=["*"],
+        expose_headers=["Location", "ETag", "X-Request-ID"],
     )
 
+    # 注册所有 API 路由
     application.include_router(health_router)
+    application.include_router(trips_router)
+    application.include_router(planning_router)
+    application.include_router(plans_router)
+    application.include_router(feedback_router)
+    application.include_router(manual_edits_router)
 
     return application
 

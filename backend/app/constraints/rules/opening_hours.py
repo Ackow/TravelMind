@@ -47,8 +47,8 @@ class OpeningHoursRule:
     4. 活动时间超出当日开放时段 → PLACE_CLOSED ERROR
     """
 
-    code = ConstraintCode.PLACE_CLOSED
-    version = "1.0.0"
+    code = ConstraintCode.PLACE_CLOSED  # 规则编码
+    version = "1.0.0"  # 规则版本
 
     def check(
         self,

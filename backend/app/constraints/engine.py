@@ -43,6 +43,7 @@ class ConstraintEngine:
     """
 
     def __init__(self, rules: Sequence[ConstraintRule]) -> None:
+        """初始化约束引擎并校验规则编码唯一。"""
         codes = [rule.code for rule in rules]
         # 校验：不允许出现重复的rule.code，一个编码只能对应一条规则
         if len(codes) != len(set(codes)):

@@ -26,8 +26,8 @@ class TransferRule:
     5. 前后活动之间必须容纳路线耗时和用户设置的缓冲时间。
     """
 
-    code = ConstraintCode.TRANSFER_TIME_INSUFFICIENT
-    version = "1.0.0"
+    code = ConstraintCode.TRANSFER_TIME_INSUFFICIENT  # 规则编码
+    version = "1.0.0"  # 规则版本
 
     def check(
         self,

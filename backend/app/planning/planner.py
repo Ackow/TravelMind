@@ -111,6 +111,7 @@ class DeterministicPlanner:
     """确定性行程规划器。"""
 
     def __init__(self, config: PlannerConfig | None = None) -> None:
+        """初始化规划器配置。"""
         self._config = config or PlannerConfig()
 
     def _build_once(
@@ -118,6 +119,7 @@ class DeterministicPlanner:
         facts: PlanningFacts,
         blocked_place_ids: frozenset[str],
     ) -> Itinerary:
+        """基于当前事实和屏蔽地点构建一次完整行程。"""
         request = facts.request
         converter = MoneyConverter(facts.exchange_rates)
         weather_by_date = {item.date: item for item in facts.weather}

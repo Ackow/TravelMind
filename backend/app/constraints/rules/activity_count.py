@@ -19,8 +19,8 @@ COUNTED_ACTIVITY_KINDS = {
 class ActivityCountRule:
     """检查每日游玩活动数量是否超过用户设置的上限。"""
 
-    code = ConstraintCode.TOO_MANY_ACTIVITIES
-    version = "1.0.0"
+    code = ConstraintCode.TOO_MANY_ACTIVITIES  # 规则编码
+    version = "1.0.0"  # 规则版本
 
     def check(
         self,

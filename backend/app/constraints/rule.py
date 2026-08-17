@@ -11,11 +11,12 @@ class ConstraintRule(Protocol):
     作用：统一所有校验规则的接口，方便引擎批量调用、管理全部约束规则。
     """
 
-    code: ConstraintCode
-    version: str
+    code: ConstraintCode  # 规则编码
+    version: str  # 规则版本
 
     def check(
         self,
         itinerary: Itinerary,
         context: ConstraintContext,
-    ) -> list[ConstraintViolation]: ...
+    ) -> list[ConstraintViolation]:
+        """执行约束校验并返回违规列表。"""

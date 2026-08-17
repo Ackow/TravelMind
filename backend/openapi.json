@@ -1,0 +1,2865 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "TravelMind API",
+    "description": "TravelMind dynamic travel planning agent API",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/health/live": {
+      "get": {
+        "tags": [
+          "system"
+        ],
+        "summary": "检查 API 进程是否存活",
+        "operationId": "get_liveness",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Get Liveness"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health/ready": {
+      "get": {
+        "tags": [
+          "system"
+        ],
+        "summary": "检查 API 是否可以接收请求",
+        "operationId": "get_readiness",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Get Readiness"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/trips": {
+      "post": {
+        "tags": [
+          "trips"
+        ],
+        "summary": "Create Trip Endpoint",
+        "description": "创建新旅行的API端点",
+        "operationId": "created_trip",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TripCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TripResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/trips/{trip_id}": {
+      "get": {
+        "tags": [
+          "trips"
+        ],
+        "summary": "Get Trip Response",
+        "operationId": "get_trip",
+        "parameters": [
+          {
+            "name": "trip_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Trip Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TripResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/trips/{trip_id}/planning-runs": {
+      "post": {
+        "tags": [
+          "planning"
+        ],
+        "summary": "Start Planning Endpoint",
+        "operationId": "start_planning_run",
+        "parameters": [
+          {
+            "name": "trip_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Trip Id"
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StartPlanningResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/trips/{trip_id}/planning-runs/{run_id}/events": {
+      "get": {
+        "tags": [
+          "planning"
+        ],
+        "summary": "List Planning Events",
+        "operationId": "list_planning_events",
+        "parameters": [
+          {
+            "name": "trip_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Trip Id"
+            }
+          },
+          {
+            "name": "run_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Run Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanningEventListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/trips/{trip_id}/plans": {
+      "get": {
+        "tags": [
+          "plans"
+        ],
+        "summary": "List Plan Versions",
+        "operationId": "list_plan_versions",
+        "parameters": [
+          {
+            "name": "trip_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Trip Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/trips/{trip_id}/plans/{version}": {
+      "get": {
+        "tags": [
+          "plans"
+        ],
+        "summary": "Get Plan Endpoint",
+        "operationId": "get_plan_version",
+        "parameters": [
+          {
+            "name": "trip_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Trip Id"
+            }
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Version"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentPlanResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/trips/{trip_id}/feedback": {
+      "post": {
+        "tags": [
+          "feedback"
+        ],
+        "summary": "Create Feedback Endpoint",
+        "description": "保存结构化反馈，并按需启动下一版规划。\n\n如果反馈缺少明确操作，则返回 200 并要求用户澄清；\n否则正常返回 202 和可选的重新规划任务。",
+        "operationId": "create_feedback",
+        "parameters": [
+          {
+            "name": "trip_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Trip Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FeedbackCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeedbackResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/trips/{trip_id}/manual-edits": {
+      "post": {
+        "tags": [
+          "plans"
+        ],
+        "summary": "Create Manual Plan Edit",
+        "operationId": "create_manual_plan_edit",
+        "parameters": [
+          {
+            "name": "trip_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Trip Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ManualPlanEditRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ManualPlanEditResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Activity": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "kind": {
+            "$ref": "#/components/schemas/ActivityKind"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Title"
+          },
+          "place_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Place Id"
+          },
+          "start_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Start At"
+          },
+          "end_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "End At"
+          },
+          "route_leg_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Route Leg Id"
+          },
+          "estimated_cost": {
+            "$ref": "#/components/schemas/Money"
+          },
+          "priority": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Priority",
+            "default": 50
+          },
+          "locked": {
+            "type": "boolean",
+            "title": "Locked"
+          },
+          "indoor_outdoor": {
+            "$ref": "#/components/schemas/IndoorOutdoor"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Reason"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Notes"
+          },
+          "source_type": {
+            "$ref": "#/components/schemas/ActivitySourceType",
+            "default": "planner"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "title",
+          "start_at",
+          "end_at",
+          "estimated_cost",
+          "locked",
+          "indoor_outdoor",
+          "reason"
+        ],
+        "title": "Activity",
+        "description": "行程中单个活动"
+      },
+      "ActivityKind": {
+        "type": "string",
+        "enum": [
+          "visit",
+          "meal",
+          "rest",
+          "transfer",
+          "free_time",
+          "check_in",
+          "check_out"
+        ],
+        "title": "ActivityKind",
+        "description": "行程单活动类型枚举"
+      },
+      "ActivitySourceType": {
+        "type": "string",
+        "enum": [
+          "planner",
+          "user",
+          "replacement",
+          "fixed_rule"
+        ],
+        "title": "ActivitySourceType",
+        "description": "活动数据来源类型"
+      },
+      "AddExcludedPlaceOperation": {
+        "properties": {
+          "op": {
+            "type": "string",
+            "const": "add_excluded_place",
+            "title": "Op"
+          },
+          "place_name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Place Name"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "op",
+          "place_name"
+        ],
+        "title": "AddExcludedPlaceOperation"
+      },
+      "AddRequiredPlaceOperation": {
+        "properties": {
+          "op": {
+            "type": "string",
+            "const": "add_required_place",
+            "title": "Op"
+          },
+          "place_name": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Place Name"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "op",
+          "place_name"
+        ],
+        "title": "AddRequiredPlaceOperation"
+      },
+      "BudgetCategory": {
+        "type": "string",
+        "enum": [
+          "intercity_transport",
+          "accommodation",
+          "food",
+          "admission",
+          "local_transport",
+          "shopping",
+          "contingency",
+          "other"
+        ],
+        "title": "BudgetCategory",
+        "description": "预算分类枚举"
+      },
+      "BudgetItem": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "category": {
+            "$ref": "#/components/schemas/BudgetCategory"
+          },
+          "label": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Label"
+          },
+          "date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Date"
+          },
+          "activity_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Activity Id"
+          },
+          "amount": {
+            "$ref": "#/components/schemas/Money"
+          },
+          "estimated": {
+            "type": "boolean",
+            "title": "Estimated"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SourceRef"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "category",
+          "label",
+          "date",
+          "amount",
+          "estimated"
+        ],
+        "title": "BudgetItem",
+        "description": "单条预算明细"
+      },
+      "BudgetSummary": {
+        "properties": {
+          "limit": {
+            "$ref": "#/components/schemas/Money"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/BudgetItem"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "totals_by_category": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Money"
+            },
+            "propertyNames": {
+              "$ref": "#/components/schemas/BudgetCategory"
+            },
+            "type": "object",
+            "title": "Totals By Category"
+          },
+          "planned_total": {
+            "$ref": "#/components/schemas/Money"
+          },
+          "remaining_amount": {
+            "type": "integer",
+            "title": "Remaining Amount"
+          },
+          "currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$",
+            "title": "Currency"
+          },
+          "within_budget": {
+            "type": "boolean",
+            "title": "Within Budget"
+          },
+          "exchange_rates": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/ExchangeRate"
+            },
+            "type": "object",
+            "title": "Exchange Rates"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "limit",
+          "planned_total",
+          "remaining_amount",
+          "currency",
+          "within_budget"
+        ],
+        "title": "BudgetSummary",
+        "description": "预算汇总"
+      },
+      "ConstraintCode": {
+        "type": "string",
+        "enum": [
+          "DATE_OUT_OF_RANGE",
+          "ACTIVITY_OVERLAP",
+          "PLACE_CLOSED",
+          "TRANSFER_TIME_INSUFFICIENT",
+          "DAILY_END_TIME_EXCEEDED",
+          "MAX_WALKING_EXCEEDED",
+          "BUDGET_EXCEEDED",
+          "WEATHER_MISMATCH",
+          "REQUIRED_PLACE_MISSING",
+          "EXCLUDED_PLACE_PRESENT",
+          "TOO_MANY_ACTIVITIES",
+          "DATA_INCOMPLETE"
+        ],
+        "title": "ConstraintCode",
+        "description": "约束校验违规编码枚举，每一个编码对应一条校验规则"
+      },
+      "ConstraintReport": {
+        "properties": {
+          "passed": {
+            "type": "boolean",
+            "title": "Passed"
+          },
+          "violations": {
+            "items": {
+              "$ref": "#/components/schemas/ConstraintViolation"
+            },
+            "type": "array",
+            "title": "Violations"
+          },
+          "checked_rule_codes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Checked Rule Codes"
+          },
+          "checked_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Checked At"
+          },
+          "engine_version": {
+            "type": "string",
+            "maxLength": 30,
+            "minLength": 1,
+            "title": "Engine Version"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "passed",
+          "checked_at",
+          "engine_version"
+        ],
+        "title": "ConstraintReport",
+        "description": "约束校验报告\n行程约束校验完整输出，汇总全部违规项，记录校验元信息，自带业务一致性校验"
+      },
+      "ConstraintSeverity": {
+        "type": "string",
+        "enum": [
+          "error",
+          "warning",
+          "info"
+        ],
+        "title": "ConstraintSeverity",
+        "description": "约束校验违规严重等级枚举"
+      },
+      "ConstraintViolation": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "code": {
+            "$ref": "#/components/schemas/ConstraintCode"
+          },
+          "severity": {
+            "$ref": "#/components/schemas/ConstraintSeverity"
+          },
+          "day": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Day"
+          },
+          "activity_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Activity Id"
+          },
+          "message": {
+            "type": "string",
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Message"
+          },
+          "actual": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actual"
+          },
+          "expected": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected"
+          },
+          "repair_hint": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Repair Hint"
+          },
+          "rule_version": {
+            "type": "string",
+            "maxLength": 30,
+            "minLength": 1,
+            "title": "Rule Version"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "code",
+          "severity",
+          "message",
+          "rule_version"
+        ],
+        "title": "ConstraintViolation",
+        "description": "单条约束违规记录：\n保存某一条规则触发后的全部上下文信息，用于前端展示、自动修复、日志排查"
+      },
+      "CurrentPlanResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "trip_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Trip Id"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "parent_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Version"
+          },
+          "status": {
+            "$ref": "#/components/schemas/PlanStatus"
+          },
+          "itinerary": {
+            "$ref": "#/components/schemas/Itinerary"
+          },
+          "constraint_report": {
+            "$ref": "#/components/schemas/ConstraintReport"
+          },
+          "change_summary": {
+            "type": "string",
+            "title": "Change Summary"
+          },
+          "trigger": {
+            "$ref": "#/components/schemas/PlanTrigger"
+          },
+          "planning_run_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Planning Run Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "accepted_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Accepted At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "trip_id",
+          "version",
+          "parent_version",
+          "status",
+          "itinerary",
+          "constraint_report",
+          "change_summary",
+          "trigger",
+          "planning_run_id",
+          "created_at",
+          "accepted_at"
+        ],
+        "title": "CurrentPlanResponse"
+      },
+      "DataQuality": {
+        "type": "string",
+        "enum": [
+          "verified",
+          "estimated",
+          "incomplete",
+          "stale",
+          "mock"
+        ],
+        "title": "DataQuality",
+        "description": "数据质量枚举，标记外部来源数据可信度"
+      },
+      "DateRange": {
+        "properties": {
+          "start_date": {
+            "type": "string",
+            "format": "date",
+            "title": "Start Date"
+          },
+          "end_date": {
+            "type": "string",
+            "format": "date",
+            "title": "End Date"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "start_date",
+          "end_date"
+        ],
+        "title": "DateRange",
+        "description": "日期区间\n用于旅行的行程起止时间"
+      },
+      "DayPlan": {
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date",
+            "title": "Date"
+          },
+          "day_number": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Day Number"
+          },
+          "theme": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Theme",
+            "default": "待规划"
+          },
+          "weather": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/WeatherDay"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "activities": {
+            "items": {
+              "$ref": "#/components/schemas/Activity"
+            },
+            "type": "array",
+            "title": "Activities"
+          },
+          "route_legs": {
+            "items": {
+              "$ref": "#/components/schemas/RouteLeg"
+            },
+            "type": "array",
+            "title": "Route Legs"
+          },
+          "statistics": {
+            "$ref": "#/components/schemas/DayStatistics"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Warnings"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "date",
+          "day_number",
+          "statistics"
+        ],
+        "title": "DayPlan",
+        "description": "单日行程：某一天全部活动、路段、天气、统计、警告"
+      },
+      "DayStatistics": {
+        "properties": {
+          "activity_count": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Activity Count",
+            "default": 0
+          },
+          "walking_meters": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Walking Meters",
+            "default": 0
+          },
+          "transfer_minutes": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Transfer Minutes",
+            "default": 0
+          },
+          "planned_minutes": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Planned Minutes",
+            "default": 0
+          },
+          "estimated_cost": {
+            "$ref": "#/components/schemas/Money"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "estimated_cost"
+        ],
+        "title": "DayStatistics",
+        "description": "单日行程统计指标"
+      },
+      "DietaryPreference": {
+        "type": "string",
+        "enum": [
+          "vegetarian",
+          "vegan",
+          "halal",
+          "gluten_free",
+          "no_pork",
+          "no_beef",
+          "seafood_free",
+          "nut_free"
+        ],
+        "title": "DietaryPreference",
+        "description": "饮食偏好枚举，用于筛选餐厅、餐饮推荐"
+      },
+      "ExchangeRate": {
+        "properties": {
+          "from_currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$",
+            "title": "From Currency"
+          },
+          "to_currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$",
+            "title": "To Currency"
+          },
+          "rate": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Rate"
+          },
+          "fetched_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Fetched At"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SourceRef"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "from_currency",
+          "to_currency",
+          "rate",
+          "fetched_at"
+        ],
+        "title": "ExchangeRate",
+        "description": "汇率领域模型，用于多币种预算换算"
+      },
+      "FeedbackCreateRequest": {
+        "properties": {
+          "base_plan_version": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Base Plan Version"
+          },
+          "message": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 1,
+            "title": "Message"
+          },
+          "client_operations": {
+            "items": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/SetBudgetOperation"
+                },
+                {
+                  "$ref": "#/components/schemas/SetMaxWalkingOperation"
+                },
+                {
+                  "$ref": "#/components/schemas/AddRequiredPlaceOperation"
+                },
+                {
+                  "$ref": "#/components/schemas/AddExcludedPlaceOperation"
+                }
+              ],
+              "discriminator": {
+                "propertyName": "op",
+                "mapping": {
+                  "add_excluded_place": "#/components/schemas/AddExcludedPlaceOperation",
+                  "add_required_place": "#/components/schemas/AddRequiredPlaceOperation",
+                  "set_budget": "#/components/schemas/SetBudgetOperation",
+                  "set_max_walking": "#/components/schemas/SetMaxWalkingOperation"
+                }
+              }
+            },
+            "type": "array",
+            "title": "Client Operations"
+          },
+          "auto_start_replanning": {
+            "type": "boolean",
+            "title": "Auto Start Replanning",
+            "default": true
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "base_plan_version",
+          "message"
+        ],
+        "title": "FeedbackCreateRequest"
+      },
+      "FeedbackRecordResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "trip_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Trip Id"
+          },
+          "base_plan_version": {
+            "type": "integer",
+            "title": "Base Plan Version"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "operations": {
+            "items": {
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/SetBudgetOperation"
+                },
+                {
+                  "$ref": "#/components/schemas/SetMaxWalkingOperation"
+                },
+                {
+                  "$ref": "#/components/schemas/AddRequiredPlaceOperation"
+                },
+                {
+                  "$ref": "#/components/schemas/AddExcludedPlaceOperation"
+                }
+              ],
+              "discriminator": {
+                "propertyName": "op",
+                "mapping": {
+                  "add_excluded_place": "#/components/schemas/AddExcludedPlaceOperation",
+                  "add_required_place": "#/components/schemas/AddRequiredPlaceOperation",
+                  "set_budget": "#/components/schemas/SetBudgetOperation",
+                  "set_max_walking": "#/components/schemas/SetMaxWalkingOperation"
+                }
+              }
+            },
+            "type": "array",
+            "title": "Operations"
+          },
+          "scope": {
+            "$ref": "#/components/schemas/FeedbackScope"
+          },
+          "requires_clarification": {
+            "type": "boolean",
+            "title": "Requires Clarification"
+          },
+          "clarification_question": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Clarification Question"
+          },
+          "planning_run_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Planning Run Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "trip_id",
+          "base_plan_version",
+          "message",
+          "operations",
+          "scope",
+          "requires_clarification",
+          "clarification_question",
+          "planning_run_id",
+          "created_at"
+        ],
+        "title": "FeedbackRecordResponse"
+      },
+      "FeedbackResponse": {
+        "properties": {
+          "feedback": {
+            "$ref": "#/components/schemas/FeedbackRecordResponse"
+          },
+          "planning_run": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PlanningRunResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "events_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Events Url"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "feedback",
+          "planning_run",
+          "events_url"
+        ],
+        "title": "FeedbackResponse"
+      },
+      "FeedbackScope": {
+        "properties": {
+          "dates": {
+            "items": {
+              "type": "string",
+              "format": "date"
+            },
+            "type": "array",
+            "title": "Dates"
+          },
+          "activity_ids": {
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "type": "array",
+            "title": "Activity Ids"
+          },
+          "global": {
+            "type": "boolean",
+            "title": "Global",
+            "default": true
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "FeedbackScope"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "IndoorOutdoor": {
+        "type": "string",
+        "enum": [
+          "indoor",
+          "outdoor",
+          "mixed",
+          "unknown"
+        ],
+        "title": "IndoorOutdoor",
+        "description": "场所属性"
+      },
+      "Itinerary": {
+        "properties": {
+          "trip_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Trip Id"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Title"
+          },
+          "destination": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Destination"
+          },
+          "timezone": {
+            "type": "string",
+            "title": "Timezone"
+          },
+          "date_range": {
+            "$ref": "#/components/schemas/DateRange"
+          },
+          "days": {
+            "items": {
+              "$ref": "#/components/schemas/DayPlan"
+            },
+            "type": "array",
+            "title": "Days"
+          },
+          "budget": {
+            "$ref": "#/components/schemas/BudgetSummary"
+          },
+          "general_notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "General Notes"
+          },
+          "generated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Generated At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "trip_id",
+          "title",
+          "destination",
+          "timezone",
+          "date_range",
+          "budget",
+          "generated_at"
+        ],
+        "title": "Itinerary",
+        "description": "完整行程"
+      },
+      "ManualActivityEdit": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Title"
+          },
+          "start_time": {
+            "type": "string",
+            "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d$",
+            "title": "Start Time"
+          },
+          "end_time": {
+            "type": "string",
+            "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d$",
+            "title": "End Time"
+          },
+          "removed": {
+            "type": "boolean",
+            "title": "Removed",
+            "default": false
+          },
+          "is_new": {
+            "type": "boolean",
+            "title": "Is New",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "start_time",
+          "end_time"
+        ],
+        "title": "ManualActivityEdit"
+      },
+      "ManualDayEdit": {
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date",
+            "title": "Date"
+          },
+          "activities": {
+            "items": {
+              "$ref": "#/components/schemas/ManualActivityEdit"
+            },
+            "type": "array",
+            "title": "Activities"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "date",
+          "activities"
+        ],
+        "title": "ManualDayEdit"
+      },
+      "ManualPlanEditRequest": {
+        "properties": {
+          "base_plan_version": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Base Plan Version"
+          },
+          "days": {
+            "items": {
+              "$ref": "#/components/schemas/ManualDayEdit"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Days"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "base_plan_version",
+          "days"
+        ],
+        "title": "ManualPlanEditRequest"
+      },
+      "ManualPlanEditResponse": {
+        "properties": {
+          "plan": {
+            "$ref": "#/components/schemas/CurrentPlanResponse"
+          },
+          "planning_run": {
+            "$ref": "#/components/schemas/PlanningRunResponse"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "plan",
+          "planning_run"
+        ],
+        "title": "ManualPlanEditResponse"
+      },
+      "Money": {
+        "properties": {
+          "amount": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Amount",
+            "description": "最小货币单位整数"
+          },
+          "currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$",
+            "title": "Currency"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "amount",
+          "currency"
+        ],
+        "title": "Money",
+        "description": "金额领域模型\n业务约定：amount 使用最小货币单位整数，例如人民币以「分」为单位，\n100 代表 1 元；避免浮点数精度丢失。"
+      },
+      "OutdoorSuitability": {
+        "type": "string",
+        "enum": [
+          "good",
+          "acceptable",
+          "poor",
+          "unknown"
+        ],
+        "title": "OutdoorSuitability",
+        "description": "户外活动适宜度枚举"
+      },
+      "Pace": {
+        "type": "string",
+        "enum": [
+          "relaxed",
+          "balanced",
+          "packed"
+        ],
+        "title": "Pace",
+        "description": "行程节奏枚举，控制每日行程松紧程度"
+      },
+      "PlanListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/PlanVersionSummary"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "title": "PlanListResponse"
+      },
+      "PlanStatus": {
+        "type": "string",
+        "enum": [
+          "draft",
+          "valid",
+          "accepted",
+          "superseded"
+        ],
+        "title": "PlanStatus"
+      },
+      "PlanTrigger": {
+        "type": "string",
+        "enum": [
+          "initial",
+          "user_feedback",
+          "data_change",
+          "manual_validation"
+        ],
+        "title": "PlanTrigger"
+      },
+      "PlanVersionSummary": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "trip_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Trip Id"
+          },
+          "version": {
+            "type": "integer",
+            "title": "Version"
+          },
+          "parent_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Version"
+          },
+          "status": {
+            "$ref": "#/components/schemas/PlanStatus"
+          },
+          "day_count": {
+            "type": "integer",
+            "title": "Day Count"
+          },
+          "planned_total": {
+            "$ref": "#/components/schemas/Money"
+          },
+          "error_count": {
+            "type": "integer",
+            "title": "Error Count"
+          },
+          "warning_count": {
+            "type": "integer",
+            "title": "Warning Count"
+          },
+          "change_summary": {
+            "type": "string",
+            "title": "Change Summary"
+          },
+          "trigger": {
+            "$ref": "#/components/schemas/PlanTrigger"
+          },
+          "planning_run_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Planning Run Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "trip_id",
+          "version",
+          "parent_version",
+          "status",
+          "day_count",
+          "planned_total",
+          "error_count",
+          "warning_count",
+          "change_summary",
+          "trigger",
+          "planning_run_id",
+          "created_at"
+        ],
+        "title": "PlanVersionSummary"
+      },
+      "PlanningEventListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/PlanningEventResponse"
+            },
+            "type": "array",
+            "title": "Items"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "items"
+        ],
+        "title": "PlanningEventListResponse"
+      },
+      "PlanningEventResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "run_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Run Id"
+          },
+          "sequence": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Sequence"
+          },
+          "type": {
+            "$ref": "#/components/schemas/PlanningEventType"
+          },
+          "step": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Step"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "payload": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Payload"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "run_id",
+          "sequence",
+          "type",
+          "step",
+          "message",
+          "payload",
+          "created_at"
+        ],
+        "title": "PlanningEventResponse"
+      },
+      "PlanningEventType": {
+        "type": "string",
+        "enum": [
+          "run_started",
+          "step_started",
+          "step_completed",
+          "constraint_found",
+          "repair_started",
+          "plan_created",
+          "review_required",
+          "run_completed",
+          "run_failed"
+        ],
+        "title": "PlanningEventType"
+      },
+      "PlanningRunResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "trip_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Trip Id"
+          },
+          "trigger": {
+            "$ref": "#/components/schemas/PlanningRunTrigger"
+          },
+          "status": {
+            "$ref": "#/components/schemas/PlanningRunStatus"
+          },
+          "progress_percent": {
+            "type": "integer",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Progress Percent"
+          },
+          "current_step": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Step"
+          },
+          "base_plan_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Base Plan Version"
+          },
+          "result_plan_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Result Plan Version"
+          },
+          "feedback_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Feedback Id"
+          },
+          "repair_attempts": {
+            "type": "integer",
+            "title": "Repair Attempts"
+          },
+          "max_repair_attempts": {
+            "type": "integer",
+            "title": "Max Repair Attempts"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started At"
+          },
+          "finished_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Finished At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "trip_id",
+          "trigger",
+          "status",
+          "progress_percent",
+          "current_step",
+          "base_plan_version",
+          "result_plan_version",
+          "feedback_id",
+          "repair_attempts",
+          "max_repair_attempts",
+          "error",
+          "created_at",
+          "started_at",
+          "finished_at"
+        ],
+        "title": "PlanningRunResponse"
+      },
+      "PlanningRunStatus": {
+        "type": "string",
+        "enum": [
+          "queued",
+          "researching",
+          "planning",
+          "validating",
+          "repairing",
+          "waiting_for_review",
+          "completed",
+          "failed",
+          "cancelled"
+        ],
+        "title": "PlanningRunStatus"
+      },
+      "PlanningRunTrigger": {
+        "type": "string",
+        "enum": [
+          "initial",
+          "feedback",
+          "data_change"
+        ],
+        "title": "PlanningRunTrigger"
+      },
+      "RouteLeg": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "origin_place_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Origin Place Id"
+          },
+          "destination_place_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Destination Place Id"
+          },
+          "mode": {
+            "$ref": "#/components/schemas/TransportMode"
+          },
+          "departure_time": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Departure Time"
+          },
+          "arrival_time": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Arrival Time"
+          },
+          "duration_minutes": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Duration Minutes"
+          },
+          "distance_meters": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Distance Meters"
+          },
+          "walking_meters": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Walking Meters"
+          },
+          "cost": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Money"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "polyline": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Polyline"
+          },
+          "instructions_summary": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Instructions Summary"
+          },
+          "source": {
+            "$ref": "#/components/schemas/SourceRef"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "origin_place_id",
+          "destination_place_id",
+          "mode",
+          "duration_minutes",
+          "distance_meters",
+          "walking_meters",
+          "source"
+        ],
+        "title": "RouteLeg",
+        "description": "单段行程路段：A点到B点的通行信息"
+      },
+      "SetBudgetOperation": {
+        "properties": {
+          "op": {
+            "type": "string",
+            "const": "set_budget",
+            "title": "Op"
+          },
+          "total_budget": {
+            "$ref": "#/components/schemas/Money"
+          },
+          "hard_limit": {
+            "type": "boolean",
+            "title": "Hard Limit"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "op",
+          "total_budget",
+          "hard_limit"
+        ],
+        "title": "SetBudgetOperation"
+      },
+      "SetMaxWalkingOperation": {
+        "properties": {
+          "op": {
+            "type": "string",
+            "const": "set_max_walking",
+            "title": "Op"
+          },
+          "meters_per_day": {
+            "type": "integer",
+            "maximum": 50000.0,
+            "minimum": 1000.0,
+            "title": "Meters Per Day"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "op",
+          "meters_per_day"
+        ],
+        "title": "SetMaxWalkingOperation"
+      },
+      "SourceRef": {
+        "properties": {
+          "provider": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 1,
+            "title": "Provider"
+          },
+          "source_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Id"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url"
+          },
+          "fetched_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Fetched At"
+          },
+          "expires_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expires At"
+          },
+          "data_quality": {
+            "$ref": "#/components/schemas/DataQuality"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "provider",
+          "fetched_at",
+          "data_quality"
+        ],
+        "title": "SourceRef",
+        "description": "外部数据源引用记录\n记录这条业务数据来自哪个第三方API，抓取时间、过期时间、数据质量。"
+      },
+      "StartPlanningResponse": {
+        "properties": {
+          "planning_run": {
+            "$ref": "#/components/schemas/PlanningRunResponse"
+          },
+          "events_url": {
+            "type": "string",
+            "title": "Events Url"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "planning_run",
+          "events_url"
+        ],
+        "title": "StartPlanningResponse"
+      },
+      "TransportMode": {
+        "type": "string",
+        "enum": [
+          "walking",
+          "public_transit",
+          "taxi",
+          "driving",
+          "cycling",
+          "mixed"
+        ],
+        "title": "TransportMode",
+        "description": "可选用的出行交通方式"
+      },
+      "TripConstraints": {
+        "properties": {
+          "total_budget": {
+            "$ref": "#/components/schemas/Money"
+          },
+          "budget_is_hard_limit": {
+            "type": "boolean",
+            "title": "Budget Is Hard Limit",
+            "default": true
+          },
+          "daily_start_time": {
+            "type": "string",
+            "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d$",
+            "title": "Daily Start Time",
+            "default": "09:00"
+          },
+          "daily_end_time": {
+            "type": "string",
+            "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d$",
+            "title": "Daily End Time",
+            "default": "21:00"
+          },
+          "max_walking_meters_per_day": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 50000.0,
+                "minimum": 1000.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Walking Meters Per Day",
+            "default": 12000
+          },
+          "max_activities_per_day": {
+            "type": "integer",
+            "maximum": 10.0,
+            "minimum": 1.0,
+            "title": "Max Activities Per Day",
+            "default": 5
+          },
+          "minimum_transfer_buffer_minutes": {
+            "type": "integer",
+            "maximum": 60.0,
+            "minimum": 0.0,
+            "title": "Minimum Transfer Buffer Minutes",
+            "default": 10
+          },
+          "rest_minutes_per_day": {
+            "type": "integer",
+            "maximum": 240.0,
+            "minimum": 0.0,
+            "title": "Rest Minutes Per Day",
+            "default": 60
+          },
+          "required_place_names": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Required Place Names"
+          },
+          "excluded_place_names": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Excluded Place Names"
+          },
+          "accessible_only": {
+            "type": "boolean",
+            "title": "Accessible Only",
+            "default": false
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "total_budget"
+        ],
+        "title": "TripConstraints",
+        "description": "行程硬性约束条件：算法必须遵守，不满足就不能生成方案"
+      },
+      "TripCreateRequest": {
+        "properties": {
+          "origin": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Origin"
+          },
+          "destination": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Destination"
+          },
+          "destination_timezone": {
+            "type": "string",
+            "title": "Destination Timezone"
+          },
+          "date_range": {
+            "$ref": "#/components/schemas/DateRange"
+          },
+          "travelers": {
+            "type": "integer",
+            "maximum": 6.0,
+            "minimum": 1.0,
+            "title": "Travelers"
+          },
+          "preferences": {
+            "$ref": "#/components/schemas/TripPreferences"
+          },
+          "constraints": {
+            "$ref": "#/components/schemas/TripConstraints"
+          },
+          "locale": {
+            "type": "string",
+            "pattern": "^[a-z]{2,3}(?:-[A-Z]{2})?$",
+            "title": "Locale",
+            "default": "zh-CN"
+          },
+          "display_currency": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$",
+            "title": "Display Currency",
+            "default": "CNY"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 1000
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "origin",
+          "destination",
+          "destination_timezone",
+          "date_range",
+          "travelers",
+          "preferences",
+          "constraints"
+        ],
+        "title": "TripCreateRequest",
+        "description": "创建旅行请求。\n\n它和领域 TripRequest 当前字段相同，但拥有独立的 OpenAPI Schema 名称。\n客户端无法提交 id、status、revision 或 current_plan_version。"
+      },
+      "TripPreferences": {
+        "properties": {
+          "interests": {
+            "items": {
+              "$ref": "#/components/schemas/WeightedPreference"
+            },
+            "type": "array",
+            "title": "Interests"
+          },
+          "avoid": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Avoid"
+          },
+          "dietary": {
+            "items": {
+              "$ref": "#/components/schemas/DietaryPreference"
+            },
+            "type": "array",
+            "title": "Dietary"
+          },
+          "transport_modes": {
+            "items": {
+              "$ref": "#/components/schemas/TransportMode"
+            },
+            "type": "array",
+            "title": "Transport Modes"
+          },
+          "accommodation_notes": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Accommodation Notes"
+          },
+          "pace": {
+            "$ref": "#/components/schemas/Pace",
+            "default": "balanced"
+          },
+          "must_visit_place_names": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Must Visit Place Names"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "TripPreferences",
+        "description": "用户行程偏好：主观喜好，不做硬性强制约束，供算法做加权推荐"
+      },
+      "TripResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "status": {
+            "$ref": "#/components/schemas/TripStatus"
+          },
+          "revision": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Revision"
+          },
+          "origin": {
+            "type": "string",
+            "title": "Origin"
+          },
+          "destination": {
+            "type": "string",
+            "title": "Destination"
+          },
+          "destination_timezone": {
+            "type": "string",
+            "title": "Destination Timezone"
+          },
+          "date_range": {
+            "$ref": "#/components/schemas/DateRange"
+          },
+          "travelers": {
+            "type": "integer",
+            "title": "Travelers"
+          },
+          "preferences": {
+            "$ref": "#/components/schemas/TripPreferences"
+          },
+          "constraints": {
+            "$ref": "#/components/schemas/TripConstraints"
+          },
+          "locale": {
+            "type": "string",
+            "title": "Locale"
+          },
+          "display_currency": {
+            "type": "string",
+            "title": "Display Currency"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          },
+          "current_plan_version": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Plan Version"
+          },
+          "active_planning_run_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Active Planning Run Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "status",
+          "revision",
+          "origin",
+          "destination",
+          "destination_timezone",
+          "date_range",
+          "travelers",
+          "preferences",
+          "constraints",
+          "locale",
+          "display_currency",
+          "notes",
+          "current_plan_version",
+          "active_planning_run_id",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "TripResponse"
+      },
+      "TripStatus": {
+        "type": "string",
+        "enum": [
+          "draft",
+          "planning",
+          "needs_review",
+          "replanning",
+          "completed",
+          "failed",
+          "archived"
+        ],
+        "title": "TripStatus"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "WeatherCondition": {
+        "type": "string",
+        "enum": [
+          "clear",
+          "partly_cloudy",
+          "cloudy",
+          "rain",
+          "storm",
+          "snow",
+          "fog",
+          "unknown"
+        ],
+        "title": "WeatherCondition",
+        "description": "天气状况枚举，描述单日天气"
+      },
+      "WeatherDay": {
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date",
+            "title": "Date"
+          },
+          "condition": {
+            "$ref": "#/components/schemas/WeatherCondition"
+          },
+          "temperature_min_c": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Temperature Min C"
+          },
+          "temperature_max_c": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Temperature Max C"
+          },
+          "rain_probability": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rain Probability"
+          },
+          "precipitation_mm": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Precipitation Mm"
+          },
+          "sunrise_time": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sunrise Time"
+          },
+          "sunset_time": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sunset Time"
+          },
+          "outdoor_suitability": {
+            "$ref": "#/components/schemas/OutdoorSuitability"
+          },
+          "source": {
+            "$ref": "#/components/schemas/SourceRef"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "date",
+          "condition",
+          "outdoor_suitability",
+          "source"
+        ],
+        "title": "WeatherDay",
+        "description": "某一天目的地的天气预报数据"
+      },
+      "WeightedPreference": {
+        "properties": {
+          "value": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 1,
+            "title": "Value"
+          },
+          "weight": {
+            "type": "number",
+            "maximum": 1.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Weight"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "value",
+          "weight"
+        ],
+        "title": "WeightedPreference",
+        "description": "带权重的偏好项\nvalue：偏好标签\nweight：偏好强度 0<weight≤1，越大代表用户越喜欢"
+      }
+    }
+  }
+}

@@ -14,8 +14,8 @@ class ActivityOverlapRule:
     判定条件：后一个活动的开始时间 < 前一个活动的结束时间 → 时间重叠
     """
 
-    code = ConstraintCode.ACTIVITY_OVERLAP
-    version = "1.0.0"
+    code = ConstraintCode.ACTIVITY_OVERLAP  # 规则编码
+    version = "1.0.0"  # 规则版本
 
     def check(
         self,

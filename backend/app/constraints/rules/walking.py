@@ -15,8 +15,8 @@ class WalkingLimitRule:
     DayStatistics.walking_meters。
     """
 
-    code = ConstraintCode.MAX_WALKING_EXCEEDED
-    version = "1.0.0"
+    code = ConstraintCode.MAX_WALKING_EXCEEDED  # 规则编码
+    version = "1.0.0"  # 规则版本
 
     def check(
         self,

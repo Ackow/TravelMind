@@ -39,6 +39,7 @@ def build_fixture_facts() -> PlanningFacts:
 
 
 def main() -> None:
+    """生成并打印东京示例行程和约束报告。"""
     outcome = DeterministicPlanner().plan(build_fixture_facts())
     print(
         outcome.itinerary.model_dump_json(

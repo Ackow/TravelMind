@@ -15,8 +15,8 @@ class BudgetRule:
     必须先补齐换汇结果；本规则不会自行创造“平均每日预算上限”。
     """
 
-    code = ConstraintCode.BUDGET_EXCEEDED
-    version = "1.0.0"
+    code = ConstraintCode.BUDGET_EXCEEDED  # 规则编码
+    version = "1.0.0"  # 规则版本
 
     def check(
         self,

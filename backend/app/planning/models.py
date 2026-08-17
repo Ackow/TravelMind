@@ -51,12 +51,12 @@ class PlanningFacts:
     生成完全相同的 Itinerary.generated_at 和 ConstraintReport.checked_at。
     """
 
-    request: TripRequest
-    places: tuple[Place, ...]
-    weather: tuple[WeatherDay, ...]
-    route_matrix: RouteMatrix
-    exchange_rates: Mapping[str, ExchangeRate]
-    planned_at: datetime
+    request: TripRequest  # 用户旅行请求
+    places: tuple[Place, ...]  # 候选地点集合
+    weather: tuple[WeatherDay, ...]  # 天气预报集合
+    route_matrix: RouteMatrix  # 路线矩阵
+    exchange_rates: Mapping[str, ExchangeRate]  # 汇率映射
+    planned_at: datetime  # 规划时间（固定输入）
 
     def __post_init__(self) -> None:
         if self.planned_at.tzinfo is None:
@@ -75,17 +75,17 @@ class PlanningFacts:
 class CandidateScore:
     """某地点在某一天的可解释评分。"""
 
-    place_id: str
-    score: float
-    reasons: tuple[str, ...]
+    place_id: str  # 地点 ID
+    score: float  # 评分
+    reasons: tuple[str, ...]  # 评分原因
 
 
 @dataclass(frozen=True, slots=True)
 class Zone:
     """通过坐标和路线事实得到的粗粒度地理区域。"""
 
-    id: str
-    place_ids: tuple[str, ...]
+    id: str  # 区域 ID
+    place_ids: tuple[str, ...]  # 区域内地点 ID 列表
 
 
 @dataclass(frozen=True, slots=True)
@@ -96,8 +96,8 @@ class PlanningOutcome:
     而不是只收到一个模糊异常。
     """
 
-    status: PlanningStatus
-    itinerary: Itinerary
-    report: ConstraintReport
-    attempts: int
-    repair_notes: tuple[str, ...]
+    status: PlanningStatus  # 规划结果状态
+    itinerary: Itinerary  # 生成的行程
+    report: ConstraintReport  # 约束检查报告
+    attempts: int  # 规划尝试轮数
+    repair_notes: tuple[str, ...]  # 修复说明

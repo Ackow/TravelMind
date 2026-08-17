@@ -17,8 +17,8 @@ class DailyEndTimeRule:
     活动时间先转换到行程目的地时区再比较，结束时间刚好等于上限时通过。
     """
 
-    code = ConstraintCode.DAILY_END_TIME_EXCEEDED
-    version = "1.0.0"
+    code = ConstraintCode.DAILY_END_TIME_EXCEEDED  # 规则编码
+    version = "1.0.0"  # 规则版本
 
     def check(
         self,

@@ -10,8 +10,8 @@ from app.domain.trip import TripRequest
 class RepairDecision:
     """本轮修正只阻止一个地点，下轮从事实重新构建行程。"""
 
-    blocked_place_id: str
-    reason: str
+    blocked_place_id: str  # 本轮屏蔽的地点 ID
+    reason: str  # 修复原因
 
 
 UNREPAIRABLE_CODES = {
@@ -21,6 +21,7 @@ UNREPAIRABLE_CODES = {
 }
 
 
+# 根据请求中的必去地点名称解析出对应的地点 ID 集合
 def required_place_ids(
     request: TripRequest,
     places_by_id: dict[str, Place],

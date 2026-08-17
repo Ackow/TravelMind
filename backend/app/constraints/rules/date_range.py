@@ -19,8 +19,8 @@ class DateRangeRule:
     2. 单个活动经过时区转换后，时间超出旅行起止日期
     """
 
-    code = ConstraintCode.DATE_OUT_OF_RANGE
-    version = "1.0.0"
+    code = ConstraintCode.DATE_OUT_OF_RANGE  # 规则编码
+    version = "1.0.0"  # 规则版本
 
     def check(
         self,

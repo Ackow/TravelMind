@@ -35,6 +35,7 @@ def stable_id(kind: str, *parts: object) -> UUID:
     return uuid5(PLANNING_NAMESPACE, fingerprint)
 
 
+# 将日期、时间和时区组合成带时区的 datetime
 def local_datetime(target_date: date, value: time, timezone: ZoneInfo) -> datetime:
     return datetime.combine(target_date, value, tzinfo=timezone)
 
@@ -43,18 +44,18 @@ def local_datetime(target_date: date, value: time, timezone: ZoneInfo) -> dateti
 class OpeningWindow:
     """排程器需要的简化营业状态。"""
 
-    known: bool
-    closed: bool
-    open_time: time | None
-    close_time: time | None
+    known: bool  # 是否已知营业时间
+    closed: bool  # 是否闭园
+    open_time: time | None  # 开门时间
+    close_time: time | None  # 关门时间
 
 
 @dataclass(frozen=True, slots=True)
 class DailySchedule:
     """一天的计划和这一天产生的预算明细。"""
 
-    day: DayPlan
-    budget_items: tuple[BudgetItem, ...]
+    day: DayPlan  # 当天计划
+    budget_items: tuple[BudgetItem, ...]  # 当天预算明细
 
 
 def opening_window(place: Place, target_date: date) -> OpeningWindow:

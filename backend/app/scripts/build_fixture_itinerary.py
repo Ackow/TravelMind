@@ -9,6 +9,7 @@ FIXTURE_TRIP_ID = UUID("00000000-0000-0000-0000-000000000001")
 
 
 def build_blank_itinerary() -> Itinerary:
+    """构建一个空白行程骨架，用于约束检查。"""
     trip = load_tokyo_trip_request()
     weather_by_date = {item.date: item for item in load_tokyo_weather()}
     currency = trip.constraints.total_budget.currency
@@ -49,6 +50,7 @@ def build_blank_itinerary() -> Itinerary:
 
 
 def main() -> None:
+    """打印空白行程 JSON。"""
     itinerary = build_blank_itinerary()
     print(itinerary.model_dump_json(indent=2))
 

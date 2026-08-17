@@ -16,8 +16,8 @@ def normalize_place_name(name: str) -> str:
 class RequiredPlaceRule:
     """检查请求中的每个必去地点是否已经安排进行程。"""
 
-    code = ConstraintCode.REQUIRED_PLACE_MISSING
-    version = "1.0.0"
+    code = ConstraintCode.REQUIRED_PLACE_MISSING  # 规则编码
+    version = "1.0.0"  # 规则版本
 
     def check(
         self,
@@ -79,8 +79,8 @@ class RequiredPlaceRule:
 class ExcludedPlaceRule:
     """检查请求明确排除的地点是否错误地出现在行程中。"""
 
-    code = ConstraintCode.EXCLUDED_PLACE_PRESENT
-    version = "1.0.0"
+    code = ConstraintCode.EXCLUDED_PLACE_PRESENT  # 规则编码
+    version = "1.0.0"  # 规则版本
 
     def check(
         self,

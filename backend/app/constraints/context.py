@@ -15,7 +15,7 @@ class ConstraintContext:
 
     request: TripRequest  # 用户原始行程规划请求
     places_by_id: Mapping[str, Place]  # 点位映射字典
-    checked_at: datetime
+    checked_at: datetime  # 校验时间
 
     def __post_init__(self) -> None:
         if self.checked_at.tzinfo is None:
