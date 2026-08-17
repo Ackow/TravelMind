@@ -1,4 +1,5 @@
 from functools import lru_cache
+from typing import Literal
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -9,6 +10,7 @@ class Settings(BaseSettings):
     app_version: str = "0.1.0"
     environment: str = "development"
     cors_origins: str = "http://localhost:3000"
+    DATA_PROVIDER_MODE: Literal["mock", "live"] = "mock"
 
     model_config = SettingsConfigDict(
         env_file="backend/.env",

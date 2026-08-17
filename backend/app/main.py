@@ -74,3 +74,19 @@ def create_app(
 
 
 app = create_app()
+
+
+def get_default_facts_factory() -> FactsFactory:
+    settings = get_settings()
+    if settings.DATA_PROVIDER_MODE == "live":
+        from app.infrastructure.composite_facts_factory import CompositeFactsFactory
+        from app.providers.poi.overpass import OverpassPoiProvider
+        from app.providers.route.osrm import OSRMRouteProvider
+        from app.providers.weather.open_meteo import OpenMeteoWeatherProvider
+
+        return CompositeFactsFactory(
+            weather_provider=OpenMeteoWeatherProvider(),
+            poi_provider=OverpassPoiProvider(),
+            route_provider=OSRMRouteProvider(),
+        )
+    return TokyoFactsFactory()
