@@ -1,0 +1,295 @@
+.page {
+  width: min(1420px, calc(100% - 96px));
+  margin: 0 auto;
+  padding: 40px 0 70px;
+  color: #122d2a;
+}
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 26px;
+}
+.breadcrumb {
+  margin-bottom: 15px;
+  color: #5e706d;
+}
+.breadcrumb a {
+  color: #123f3a;
+}
+.breadcrumb span {
+  margin: 0 10px;
+}
+.hero h1 {
+  font-size: 2.45rem;
+  letter-spacing: -0.055em;
+}
+.hero > div > p:last-child {
+  margin-top: 6px;
+  color: #657572;
+}
+.progressActions {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+.progressActions button {
+  width: 144px;
+  height: 48px;
+  border: 1px solid #bfcac6;
+  border-radius: 7px;
+  background: #fff;
+  color: #263b38;
+}
+.progressRing {
+  display: grid;
+  width: 94px;
+  height: 94px;
+  place-items: center;
+  border-radius: 50%;
+  background: conic-gradient(#168875 var(--progress), #dcebe5 0);
+}
+.progressRing:before {
+  grid-area: 1/1;
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: #fff;
+  content: "";
+}
+.progressRing span {
+  z-index: 1;
+  grid-area: 1/1;
+  font-size: 1.35rem;
+  font-weight: 850;
+}
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(360px, 1fr);
+  gap: 30px;
+}
+.progressCard,
+.sidebar > section {
+  border: 1px solid #d9e1de;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 7px 20px rgb(19 56 49 / 4%);
+}
+.progressCard {
+  padding: 25px 27px;
+}
+.progressCard h2,
+.sidebar h2 {
+  font-size: 1.4rem;
+}
+.steps {
+  margin: 22px 0 20px;
+  list-style: none;
+}
+.steps li {
+  position: relative;
+  display: grid;
+  grid-template-columns: 40px 28px 240px 1fr;
+  align-items: center;
+  min-height: 49px;
+}
+.steps li:after {
+  position: absolute;
+  top: 36px;
+  bottom: -14px;
+  left: 18px;
+  width: 2px;
+  background: #d7e1dd;
+  content: "";
+}
+.steps li:last-child:after {
+  display: none;
+}
+.stepState {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border: 1px solid #aebbb7;
+  border-radius: 50%;
+  background: #fff;
+  color: #657572;
+  font-size: 0.83rem;
+}
+.steps strong {
+  font-size: 0.95rem;
+}
+.steps p {
+  color: #5e706d;
+  font-size: 0.86rem;
+}
+.completeStep .stepState {
+  border-color: #83c8ad;
+  background: #83c8ad;
+  color: #fff;
+}
+.completeStep:after {
+  background: #95cdb7;
+}
+.activeStep .stepState {
+  border: 4px solid #123f3a;
+  background: #e8f1ed;
+  color: #123f3a;
+  font-weight: 850;
+  box-shadow: 0 0 0 2px #d1e2db;
+}
+.pendingStep {
+  color: #566965;
+}
+.events {
+  margin-top: 24px;
+  border: 1px solid #d9e1de;
+  border-radius: 10px;
+  padding: 18px;
+}
+.events h3 {
+  margin-bottom: 10px;
+  font-size: 1.15rem;
+}
+.events > div {
+  display: grid;
+  grid-template-columns: 65px 27px 125px 1fr;
+  align-items: center;
+  min-height: 45px;
+  border-top: 1px solid #e1e7e4;
+  font-size: 0.83rem;
+}
+.events > div:first-of-type {
+  border-top: 0;
+}
+.events span {
+  width: max-content;
+  border: 1px solid #b9dacf;
+  border-radius: 4px;
+  background: #ecf6f2;
+  padding: 3px 12px;
+  color: #145c53;
+}
+.events p {
+  color: #536663;
+}
+.sidebar {
+  display: grid;
+  gap: 17px;
+}
+.sidebar > section {
+  padding: 24px;
+}
+.tripSummary > div {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  min-height: 48px;
+  border-bottom: 1px solid #dce4e1;
+}
+.tripSummary > strong {
+  display: block;
+  margin: 14px 0 8px;
+}
+.tripSummary p {
+  display: flex;
+  gap: 10px;
+}
+.tripSummary i {
+  border: 1px solid #cfe0da;
+  border-radius: 5px;
+  background: #f1f7f4;
+  padding: 5px 14px;
+  color: #15564f;
+  font-size: 0.78rem;
+  font-style: normal;
+}
+.findings > div {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 12px;
+  border: 1px solid #cfe4db;
+  border-radius: 8px;
+  background: #f1f8f5;
+  padding: 13px;
+}
+.findings .warning {
+  border-color: #f0d2a6;
+  background: #fff8ee;
+  color: #d17516;
+}
+.findings .info {
+  border-color: #bdd7f6;
+  background: #f1f6fd;
+  color: #2160bd;
+}
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+.metrics > div {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-right: 1px solid #dce4e1;
+}
+.metrics > div:last-child {
+  border-right: 0;
+  padding-left: 18px;
+}
+.metrics span {
+  display: grid;
+  color: #536663;
+  font-size: 0.75rem;
+}
+.metrics strong {
+  color: #152c29;
+  font-size: 1.55rem;
+}
+.errorState {
+  width: min(720px, calc(100% - 48px));
+  margin: 100px auto;
+  border: 1px solid #efd1cc;
+  border-radius: 16px;
+  background: #fff;
+  padding: 50px;
+  text-align: center;
+}
+.errorState p {
+  margin: 12px 0 20px;
+  color: #b54338;
+}
+.errorState a {
+  color: #123f3a;
+  font-weight: 800;
+}
+@media (max-width: 900px) {
+  .page {
+    width: min(100% - 32px, 1420px);
+  }
+  .layout {
+    grid-template-columns: 1fr;
+  }
+  .steps li {
+    grid-template-columns: 38px 26px 1fr;
+  }
+  .steps p {
+    grid-column: 3;
+  }
+  .hero {
+    align-items: flex-start;
+    gap: 20px;
+  }
+  .progressActions {
+    flex-direction: column;
+  }
+  .metrics {
+    grid-template-columns: 1fr;
+  }
+  .metrics > div {
+    border-right: 0;
+  }
+}

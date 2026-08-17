@@ -1,0 +1,247 @@
+.header {
+  position: relative;
+  z-index: 20;
+  height: 72px;
+  border-bottom: 1px solid var(--line);
+  background: rgb(255 255 255 / 96%);
+}
+
+.nav {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  max-width: 1480px;
+  width: 100%;
+  height: 100%;
+  margin: 0 auto;
+  padding: 0 48px;
+}
+
+.brand,
+.links,
+.actions {
+  display: flex;
+  align-items: center;
+}
+
+.brand {
+  gap: 12px;
+  color: var(--teal);
+  font-size: 1.18rem;
+  font-weight: 850;
+  letter-spacing: -0.04em;
+}
+
+.brandMark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  color: var(--teal);
+}
+
+.links {
+  gap: 42px;
+  color: var(--muted);
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.links a {
+  position: relative;
+  display: grid;
+  height: 72px;
+  place-items: center;
+}
+
+.links .activeLink,
+.links a:hover {
+  color: var(--teal);
+}
+
+.links .activeLink::after {
+  position: absolute;
+  bottom: -1px;
+  left: 50%;
+  width: 32px;
+  height: 3px;
+  border-radius: 999px 999px 0 0;
+  background: var(--teal);
+  content: "";
+  transform: translateX(-50%);
+}
+
+.actions {
+  justify-content: flex-end;
+  gap: 19px;
+}
+
+.menuAnchor {
+  position: relative;
+}
+
+.notification {
+  position: relative;
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border: 0;
+  border-radius: 11px;
+  background: transparent;
+  color: var(--teal);
+}
+
+.notification > i {
+  position: absolute;
+  top: 2px;
+  right: 1px;
+  display: grid;
+  min-width: 16px;
+  height: 16px;
+  place-items: center;
+  padding: 0 4px;
+  border: 2px solid white;
+  border-radius: 999px;
+  background: var(--coral);
+  color: white;
+  font-size: 0.55rem;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.notification img {
+  width: 23px;
+  height: 23px;
+}
+
+.notification:hover {
+  background: var(--teal-soft);
+}
+
+.avatar {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border-radius: 50%;
+  background: #123f3a;
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-weight: 700;
+  border: 0;
+}
+
+.notificationMenu,
+.profileMenu {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  z-index: 60;
+  width: 320px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: white;
+  box-shadow: 0 20px 48px rgb(18 63 58 / 16%);
+  animation: menu-in 180ms ease-out both;
+}
+
+.notificationMenu header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.notificationMenu header button {
+  border: 0;
+  background: transparent;
+  color: var(--teal);
+  font-size: 0.7rem;
+  font-weight: 750;
+}
+
+.notificationMenu > div {
+  position: relative;
+  padding: 13px 18px;
+  border-bottom: 1px solid #edf1ef;
+}
+
+.notificationMenu > div:last-child {
+  border-bottom: 0;
+}
+
+.notificationMenu span {
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.notificationMenu p {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 0.68rem;
+}
+
+.notificationMenu .unreadItem::before {
+  position: absolute;
+  top: 19px;
+  left: 7px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--coral);
+  content: "";
+}
+
+.profileMenu {
+  display: grid;
+  width: 220px;
+  padding: 14px;
+}
+
+.profileMenu strong,
+.profileMenu small {
+  padding: 0 5px;
+}
+
+.profileMenu small {
+  margin: 2px 0 10px;
+  color: var(--muted);
+  font-size: 0.66rem;
+}
+
+.profileMenu a {
+  padding: 9px 10px;
+  border-radius: 7px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.profileMenu a:hover {
+  background: var(--teal-soft);
+}
+
+@keyframes menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 760px) {
+  .nav {
+    grid-template-columns: 1fr auto;
+    width: min(100% - 32px, 1520px);
+  }
+
+  .links {
+    display: none;
+  }
+}

@@ -1,0 +1,93 @@
+.page {
+  width: min(1180px, calc(100% - 64px));
+  margin: 0 auto;
+  padding: 72px 0;
+}
+
+.eyebrow {
+  color: var(--teal);
+  font-size: 0.76rem;
+  font-weight: 850;
+}
+
+.page > h1 {
+  margin: 8px 0;
+  font-size: 2.35rem;
+  letter-spacing: -0.05em;
+}
+
+.lead {
+  color: var(--muted);
+}
+
+.cardGrid,
+.helpGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-top: 36px;
+}
+
+.cardGrid a,
+.helpGrid article {
+  min-height: 210px;
+  padding: 28px;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: white;
+  box-shadow: var(--card-shadow);
+}
+
+.cardGrid h2,
+.helpGrid h2 {
+  margin: 18px 0 6px;
+  font-size: 1.05rem;
+}
+
+.cardGrid p,
+.helpGrid p {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.cardGrid span {
+  display: block;
+  margin-top: 25px;
+  color: var(--teal);
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+.helpGrid {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.helpGrid b {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--teal-soft);
+  color: var(--teal);
+  font-size: 0.72rem;
+}
+
+.primaryAction {
+  display: inline-grid;
+  min-width: 176px;
+  min-height: 48px;
+  margin-top: 28px;
+  place-items: center;
+  border-radius: 8px;
+  background: var(--coral);
+  color: white;
+  font-weight: 800;
+}
+
+@media (max-width: 800px) {
+  .cardGrid,
+  .helpGrid {
+    grid-template-columns: 1fr;
+  }
+}
