@@ -4,6 +4,9 @@ from app.agent.state import PlanState, PlanStatus
 
 def route_after_constraints(state: PlanState) -> Literal["prepare_review", "propose_repairs", "failed"]:
     """条件边：根据约束引擎审计结果与修复尝试次数决定流向。"""
+    if state.get("status") == PlanStatus.FAILED:
+        return "failed"
+
     report = state.get("constraint_report")
     attempts = state.get("repair_attempts", 0)
     max_attempts = state.get("max_repair_attempts", 3)

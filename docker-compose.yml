@@ -1,0 +1,34 @@
+services:
+  # PostgreSQL 16 关系型数据库服务
+  postgres:
+    image: postgres:16-alpine
+    container_name: travelmind_postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: travelmind
+      POSTGRES_PASSWORD: travelmind_password
+      POSTGRES_DB: travelmind_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U travelmind -d travelmind_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 轻量级 Web 数据库管理界面 (浏览器访问 http://localhost:8080)
+  adminer:
+    image: adminer:latest
+    container_name: travelmind_adminer
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+    name: travelmind_postgres_data

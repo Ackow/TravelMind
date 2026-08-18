@@ -46,16 +46,16 @@ def node_human_interrupt(state: PlanState) -> dict[str, Any]:
     # interrupt() 接收展示给用户的信息，并阻塞当前协程/线程
     # 当外部通过 Command(resume=...) 唤醒时，interrupt() 将返回用户传入的指令
     user_input = interrupt({
-        "trip_id": state["trip_id"],
+        "trip_id": state.get("trip_id", ""),
         "summary": state.get("review_summary"),
         "itinerary": state.get("current_itinerary"),
     })
 
     now_dt = datetime.now(UTC)
-    action = user_input.get("action", "approve")
-    feedback = user_input.get("feedback")
+    action = user_input.get("action", "approve") if isinstance(user_input, dict) else "approve"
+    feedback = user_input.get("feedback") if isinstance(user_input, dict) else None
 
-    if action == "approve":
+    if action in ("approve", "accept"):
         event = {
             "node": "human_interrupt",
             "message": "用户已批准当前旅行方案，规划流程圆满达成！",

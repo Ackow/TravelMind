@@ -41,7 +41,16 @@ def create_app(
         description="TravelMind dynamic travel planning agent API",
     )
     # 将核心依赖挂到 app.state，路由层通过 Depends 获取
-    application.state.repository = repository or InMemoryTravelRepository()
+    if repository is not None:
+        application.state.repository = repository
+    elif settings.USE_SQL_REPOSITORY:
+        from app.core.database import SessionLocal
+        from app.infrastructure.sql_repository import SqlAlchemyTravelRepository
+
+        application.state.repository = SqlAlchemyTravelRepository(SessionLocal)
+    else:
+        application.state.repository = InMemoryTravelRepository()
+
     application.state.clock = clock or SystemClock()
     application.state.facts_factory = facts_factory or get_default_facts_factory()
 

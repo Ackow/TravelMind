@@ -14,6 +14,16 @@ class Settings(BaseSettings):
     AMAP_API_KEY: str | None = None
     QWEATHER_API_KEY: str | None = None
     QWEATHER_HOST: str | None = None
+    # 数据库持久化配置
+    DATABASE_URL: str = "sqlite:///./travelmind.db"
+    DATABASE_ECHO: bool = False
+    USE_SQL_REPOSITORY: bool = False
+    AGENT_CHECKPOINT_DB_PATH: str = "agent_checkpoints.db"
+
+    # LLM 模型与 API 配置
+    LLM_API_KEY: str | None = None
+    LLM_BASE_URL: str | None = None
+    LLM_MODEL: str = "gpt-4o"
 
     model_config = SettingsConfigDict(
         env_file=(".env", "backend/.env"),

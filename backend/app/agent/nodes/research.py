@@ -24,6 +24,7 @@ def node_research_facts(state: PlanState, factory: CompositeFactsFactory) -> dic
             "places": facts.places,
             "weather_forecast": facts.weather,
             "route_matrix_cells": tuple(facts.route_matrix.cells),
+            "exchange_rates": facts.exchange_rates,
             "status": PlanStatus.PLANNING,
             "audit_events": [event],
             "updated_at": planned_at,

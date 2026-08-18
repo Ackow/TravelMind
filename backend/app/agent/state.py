@@ -44,6 +44,7 @@ class PlanState(TypedDict, total=False):
     places: tuple[Place, ...]
     weather_forecast: tuple[WeatherDay, ...]
     route_matrix_cells: tuple[RouteMatrixCell, ...]
+    exchange_rates: dict[str, float]
 
     # 当前行程方案与约束报告
     current_itinerary: Itinerary | None

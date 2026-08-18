@@ -11,6 +11,9 @@ htmlcov/
 
 # Python environment
 backend/.env
+*.db
+*.sqlite
+*.sqlite3
 
 # Node
 frontend/node_modules/

@@ -35,12 +35,14 @@ def node_build_candidate(state: PlanState) -> dict[str, Any]:
         )
         route_matrix = RouteMatrix(cells=list(cells), source=source)
 
+    exchange_rates = state.get("exchange_rates") or {"JPY/CNY": 0.05, "CNY/JPY": 20.0}
+
     facts = PlanningFacts(
         request=request,
         places=tuple(places),
         weather=tuple(weather),
         route_matrix=route_matrix,
-        exchange_rates={},
+        exchange_rates=exchange_rates,
         planned_at=now_dt,
     )
 

@@ -1,15 +1,16 @@
+from functools import lru_cache
 from typing import Annotated
 
-from fastapi import Request
-from fastapi.params import Depends
+from fastapi import Depends, Request
 
+from app.agent.checkpointer import create_agent_checkpointer
 from app.application.clock import Clock
 from app.application.facts import FactsFactory
 from app.application.repository import TravelRepository
 
 
 def get_repository(request: Request) -> TravelRepository:
-    """从应用状态中获取内存/测试仓库。"""
+    """从应用状态中获取仓库实例（支持内存与 PostgreSQL/SQLite）。"""
     return request.app.state.repository
 
 
@@ -21,6 +22,12 @@ def get_clock(request: Request) -> Clock:
 def get_facts_factory(request: Request) -> FactsFactory:
     """获取事实工厂，用于把旅行请求转换为规划器只读输入。"""
     return request.app.state.facts_factory
+
+
+@lru_cache
+def get_checkpointer():
+    """获取 LangGraph 状态检查点持久化器。"""
+    return create_agent_checkpointer()
 
 
 # FastAPI 依赖别名，路由参数中直接使用 RepositoryDep / ClockDep / FactsFactoryDep
