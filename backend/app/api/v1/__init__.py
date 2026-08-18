@@ -6,6 +6,7 @@ from app.api.v1.planning import router as planning_router
 from app.api.v1.plans import router as plans_router
 from app.api.v1.trips import router as trips_router
 from app.api.v1.agent import router as agent_router
+from app.api.v1.replanning import router as replanning_router
 
 api_v1_router = APIRouter()
 
@@ -16,6 +17,7 @@ api_v1_router.include_router(plans_router)
 api_v1_router.include_router(feedback_router)
 api_v1_router.include_router(manual_edits_router)
 api_v1_router.include_router(agent_router)
+api_v1_router.include_router(replanning_router)
 
 __all__ = [
     "api_v1_router",
@@ -26,4 +28,5 @@ __all__ = [
     "plans_router",
     "trips_router",
     "agent_router",
+    "replanning_router",
 ]
