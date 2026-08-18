@@ -11,7 +11,7 @@ class OpenMeteoWeatherProvider(WeatherProvider):
 
     BASE_URL = "https://api.open-meteo.com/v1/forecast"
 
-    def __init__(self, timeout_seconds: float = 5.0) -> None:
+    def __init__(self, timeout_seconds: float = 12.0) -> None:
         self._timeout = timeout_seconds
 
     @staticmethod
@@ -70,19 +70,31 @@ class OpenMeteoWeatherProvider(WeatherProvider):
             # 远期规划（超过16天）：使用可用周期的气象数据并映射到目标出行日期
             params["forecast_days"] = forecast_days
 
-        try:
-            with httpx.Client(timeout=self._timeout) as client:
-                resp = client.get(self.BASE_URL, params=params)
-                resp.raise_for_status()
-                payload = resp.json()
-        except httpx.TimeoutException as exc:
-            raise ProviderTimeoutError(
-                "Open-Meteo 天气请求超时", provider_name="open_meteo", cause=exc
-            ) from exc
-        except Exception as exc:
+        last_exc: Exception | None = None
+        payload: dict[str, object] = {}
+
+        for _ in range(2):  # 最多重试 2 次抵抗海外网络抖动
+            try:
+                with httpx.Client(timeout=self._timeout) as client:
+                    resp = client.get(self.BASE_URL, params=params)
+                    resp.raise_for_status()
+                    payload = resp.json()
+                    break
+            except httpx.TimeoutException as exc:
+                last_exc = exc
+                continue
+            except Exception as exc:
+                last_exc = exc
+                continue
+
+        if not payload and last_exc:
+            if isinstance(last_exc, httpx.TimeoutException):
+                raise ProviderTimeoutError(
+                    "Open-Meteo 天气请求超时", provider_name="open_meteo", cause=last_exc
+                ) from last_exc
             raise ProviderError(
-                f"Open-Meteo 请求失败: {exc}", provider_name="open_meteo", cause=exc
-            ) from exc
+                f"Open-Meteo 请求失败: {last_exc}", provider_name="open_meteo", cause=last_exc
+            ) from last_exc
 
         daily = payload.get("daily", {})
         weather_codes = daily.get("weather_code", [])

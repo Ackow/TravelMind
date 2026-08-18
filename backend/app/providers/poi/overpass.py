@@ -8,10 +8,11 @@ from app.providers.base import PoiProvider, ProviderError, ProviderTimeoutError
 class OverpassPoiProvider(PoiProvider):
     """基于 OpenStreetMap Overpass API 的真实地点检索适配器。"""
 
-    # 主节点与公共备用镜像节点
+    # 主节点与公共备用高速镜像节点
     ENDPOINTS = [
-        "https://overpass-api.de/api/interpreter",
         "https://overpass.kumi.systems/api/interpreter",
+        "https://overpass-api.de/api/interpreter",
+        "https://overpass.private.coffee/api/interpreter",
     ]
 
     HEADERS = {
@@ -19,7 +20,7 @@ class OverpassPoiProvider(PoiProvider):
         "Accept": "application/json",
     }
 
-    def __init__(self, timeout_seconds: float = 10.0) -> None:
+    def __init__(self, timeout_seconds: float = 15.0) -> None:
         self._timeout = timeout_seconds
 
     @staticmethod
@@ -62,12 +63,9 @@ class OverpassPoiProvider(PoiProvider):
         categories: list[PlaceCategory] | None = None,
         limit: int = 20,
     ) -> list[Place]:
-        # 查询中心点周边 6000 米范围内的旅游景点与公园
-        query = f"""[out:json][timeout:8];
-(
-  node["tourism"~"museum|attraction|viewpoint"](around:6000,{location.latitude},{location.longitude});
-  node["leisure"="park"](around:6000,{location.latitude},{location.longitude});
-);
+        # 查询中心点周边 4000 米范围内的旅游景点（极速空间索引）
+        query = f"""[out:json][timeout:15];
+node["tourism"](around:4000,{location.latitude},{location.longitude});
 out body {limit};
 """
 
@@ -79,8 +77,10 @@ out body {limit};
                 try:
                     resp = client.post(endpoint, data={"data": query})
                     resp.raise_for_status()
-                    data = resp.json()
-                    break
+                    payload = resp.json()
+                    if payload.get("elements") is not None:
+                        data = payload
+                        break
                 except httpx.TimeoutException as exc:
                     last_error = exc
                     continue

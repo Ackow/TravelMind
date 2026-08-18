@@ -1,57 +1,53 @@
-from datetime import date
+from datetime import datetime
 from app.application.facts import FactsFactory
-from app.domain.common import DateRange, GeoPoint
-from app.domain.research import Place, RouteMatrixCell, WeatherDay
-from app.domain.trip import TransportMode
+from app.domain.common import GeoPoint
+from app.domain.trip import TripRequest
+from app.planning import PlanningFacts
 from app.providers.base import PoiProvider, RouteProvider, WeatherProvider
-from app.providers.decorators import InMemoryTTLCache
+from app.providers.poi.amap import AmapPoiProvider
+from app.providers.poi.overpass import OverpassPoiProvider
+from app.providers.route.amap import AmapRouteProvider
+from app.providers.route.osrm import OSRMRouteProvider
+from app.providers.weather.amap import AmapWeatherProvider
+from app.providers.weather.open_meteo import OpenMeteoWeatherProvider
+from app.providers.weather.qweather import QWeatherProvider
 
 
 class CompositeFactsFactory(FactsFactory):
-    """生产级事实工厂：集成真实数据 Provider 与 TTL 防腐缓存。"""
+    """支持国内高精度 (高德地点/路线/天气+和风) 与海外全球开源 (OSM+Open-Meteo) 智能双模路由的事实工厂。"""
 
     def __init__(
         self,
-        weather_provider: WeatherProvider,
-        poi_provider: PoiProvider,
-        route_provider: RouteProvider,
+        amap_key: str | None = None,
+        qweather_key: str | None = None,
     ) -> None:
-        self._weather = weather_provider
-        self._poi = poi_provider
-        self._route = route_provider
-        self._cache = InMemoryTTLCache(default_ttl_seconds=600)
+        self._amap_key = amap_key
+        self._qweather_key = qweather_key
 
-    def get_weather_forecast(self, destination: str, date_range: DateRange) -> list[WeatherDay]:
-        cache_key = f"weather:{destination}:{date_range.start_date}:{date_range.end_date}"
-        cached = self._cache.get(cache_key)
-        if cached is not None:
-            return cached
+        # 全球开源兜底实例（无需 API Key）
+        self._global_weather = OpenMeteoWeatherProvider()
+        self._global_poi = OverpassPoiProvider()
+        self._global_route = OSRMRouteProvider()
 
-        # 默认使用目的地中心坐标
-        tokyo_center = GeoPoint(latitude=35.6762, longitude=139.6503)
-        res = self._weather.get_forecast(destination=destination, location=tokyo_center, date_range=date_range)
-        self._cache.set(cache_key, res)
-        return res
+    @staticmethod
+    def _is_in_mainland_china(location: GeoPoint) -> bool:
+        """粗略地理围栏：经度 73°E~135°E, 纬度 18°N~53.5°N"""
+        return 73.0 <= location.longitude <= 135.0 and 18.0 <= location.latitude <= 53.5
 
-    def get_candidate_places(self, destination: str) -> list[Place]:
-        cache_key = f"places:{destination}"
-        cached = self._cache.get(cache_key)
-        if cached is not None:
-            return cached
+    def _resolve_providers(self, location: GeoPoint) -> tuple[WeatherProvider, PoiProvider, RouteProvider]:
+        """根据坐标地理围栏与 API Key 自动路由最佳数据源。"""
+        is_china = self._is_in_mainland_china(location)
 
-        tokyo_center = GeoPoint(latitude=35.6762, longitude=139.6503)
-        res = self._poi.search_places(destination=destination, location=tokyo_center, limit=20)
-        self._cache.set(cache_key, res)
-        return res
+        # 🇨🇳 中国大陆境内且配置了国内 Key -> 使用高德与和风
+        if is_china and self._amap_key:
+            weather: WeatherProvider = (
+                QWeatherProvider(self._qweather_key)
+                if self._qweather_key
+                else AmapWeatherProvider(self._amap_key)
+            )
+            poi = AmapPoiProvider(self._amap_key)
+            route = AmapRouteProvider(self._amap_key)
+            return weather, poi, route
 
-    def get_route_matrix(
-        self,
-        origin_place_ids: list[str],
-        destination_place_ids: list[str],
-        mode: TransportMode,
-    ) -> list[RouteMatrixCell]:
-        places = {p.id: p.location for p in self.get_candidate_places("Tokyo")}
-        origins = [(pid, places[pid]) for pid in origin_place_ids if pid in places]
-        destinations = [(pid, places[pid]) for pid in destination_place_ids if pid in places]
-
-        return self._route.get_route_matrix(origins=origins, destinations=destinations, mode=mode)
+        # 海外城市或无 Key 模式 -> 自动切换全球开源数据源
+        return self._global_weather, self._global_poi, self._global_route

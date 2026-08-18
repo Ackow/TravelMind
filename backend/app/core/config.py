@@ -11,10 +11,12 @@ class Settings(BaseSettings):
     environment: str = "development"
     cors_origins: str = "http://localhost:3000"
     DATA_PROVIDER_MODE: Literal["mock", "live"] = "mock"
+    AMAP_API_KEY: str | None = None
+    QWEATHER_API_KEY: str | None = None
+    QWEATHER_HOST: str | None = None
 
     model_config = SettingsConfigDict(
-        env_file="backend/.env",
-        env_prefix="TRAVELMIND_",
+        env_file=(".env", "backend/.env"),
         extra="ignore",
     )
 
