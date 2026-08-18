@@ -1,7 +1,5 @@
 from uuid import UUID
-
 from fastapi import APIRouter, status
-
 from app.api.dependencies import ClockDep, FactsFactoryDep, RepositoryDep
 from app.api.schemas import (
     PlanningEventListResponse,
@@ -24,7 +22,6 @@ router = APIRouter(
     status_code=status.HTTP_202_ACCEPTED,
     operation_id="start_planning_run",
 )
-# 启动规划任务，返回任务信息和事件查询地址
 def start_planning_endpoint(
     trip_id: UUID,
     repository: RepositoryDep,
@@ -49,7 +46,6 @@ def start_planning_endpoint(
     response_model=PlanningEventListResponse,
     operation_id="list_planning_events",
 )
-# 查询一次规划任务产生的过程事件，用于前端展示进度
 def list_planning_events(
     trip_id: UUID,
     run_id: UUID,

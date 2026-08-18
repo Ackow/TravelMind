@@ -250,3 +250,10 @@ def stable_trip_id(facts: PlanningFacts) -> UUID:
     """根据请求内容生成稳定的旅行 ID。"""
     namespace = UUID("8e5c513c-4d70-4df8-8ab4-38c61c4b3002")
     return uuid5(namespace, facts.request.model_dump_json())
+
+
+def build_itinerary(facts: PlanningFacts, config: PlannerConfig | None = None) -> Itinerary:
+    """构建行程方案的简易快捷函数。"""
+    planner = DeterministicPlanner(config)
+    outcome = planner.plan(facts)
+    return outcome.itinerary

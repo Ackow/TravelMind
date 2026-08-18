@@ -1,7 +1,5 @@
 from uuid import UUID
-
 from fastapi import APIRouter, Response, status
-
 from app.api.dependencies import ClockDep, RepositoryDep
 from app.api.schemas import TripCreateRequest, TripResponse
 from app.application.errors import ApplicationError
@@ -12,9 +10,7 @@ router = APIRouter(prefix="/api/v1/trips", tags=["trips"])
 
 
 def to_trip_response(trip: TripRecord) -> TripResponse:
-    # 从trip对象中提取原始请求数据
     request = trip.request
-
     return TripResponse(
         id=trip.id,
         status=trip.status,
@@ -40,7 +36,7 @@ def to_trip_response(trip: TripRecord) -> TripResponse:
     "",
     response_model=TripResponse,
     status_code=status.HTTP_201_CREATED,
-    operation_id="created_trip",
+    operation_id="create_trip",
 )
 def create_trip_endpoint(
     payload: TripCreateRequest,
@@ -48,14 +44,13 @@ def create_trip_endpoint(
     repository: RepositoryDep,
     clock: ClockDep,
 ) -> TripResponse:
-    """创建新旅行的API端点"""
-
-    trip = create_trip(payload, repository=repository, clock=clock)
-    # 设置 Location 响应头，指向新创建资源的URL
+    trip = create_trip(
+        request=payload,
+        repository=repository,
+        clock=clock,
+    )
     response.headers["Location"] = f"/api/v1/trips/{trip.id}"
-    # 设置 ETag 响应头，值为当前资源版本号，用于客户端缓存和并发控制
     response.headers["ETag"] = f'"{trip.revision}"'
-
     return to_trip_response(trip)
 
 
@@ -64,11 +59,17 @@ def create_trip_endpoint(
     response_model=TripResponse,
     operation_id="get_trip",
 )
-def get_trip_response(
+def get_trip_endpoint(
     trip_id: UUID,
+    response: Response,
     repository: RepositoryDep,
 ) -> TripResponse:
     trip = get_trip(repository, trip_id)
     if trip is None:
-        raise ApplicationError("TRIP_NOT_FOUND", "旅行不存在", 404)
+        raise ApplicationError(
+            code="TRIP_NOT_FOUND",
+            message=f"Trip {trip_id} does not exist",
+            status_code=404,
+        )
+    response.headers["ETag"] = f'"{trip.revision}"'
     return to_trip_response(trip)

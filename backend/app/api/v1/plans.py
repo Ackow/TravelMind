@@ -1,7 +1,5 @@
 from uuid import UUID
-
 from fastapi import APIRouter
-
 from app.api.dependencies import RepositoryDep
 from app.api.schemas import CurrentPlanResponse, PlanListResponse, PlanVersionSummary
 from app.application.planning import list_plan_versions as list_plan_versions_use_case
@@ -15,7 +13,6 @@ router = APIRouter(prefix="/api/v1/trips/{trip_id}/plans", tags=["plans"])
     response_model=PlanListResponse,
     operation_id="list_plan_versions",
 )
-# 获取某次旅行的全部计划版本摘要
 def list_plan_versions(
     trip_id: UUID,
     repository: RepositoryDep,
@@ -54,7 +51,6 @@ def list_plan_versions(
     response_model=CurrentPlanResponse,
     operation_id="get_plan_version",
 )
-# 获取指定版本（或 current）的完整计划详情
 def get_plan_endpoint(
     trip_id: UUID,
     version: str,

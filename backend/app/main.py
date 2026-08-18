@@ -4,18 +4,23 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.errors import install_error_handlers
-from app.api.routes.feedback import router as feedback_router
-from app.api.routes.health import router as health_router
-from app.api.routes.manual_edits import router as manual_edits_router
-from app.api.routes.planning import router as planning_router
-from app.api.routes.plans import router as plans_router
-from app.api.routes.trips import router as trips_router
+from app.api.v1 import api_v1_router
 from app.application.clock import Clock, SystemClock
 from app.application.facts import FactsFactory
 from app.application.repository import TravelRepository
 from app.core.config import get_settings
 from app.infrastructure.memory_repository import InMemoryTravelRepository
 from app.infrastructure.tokyo_facts_factory import TokyoFactsFactory
+
+
+def get_default_facts_factory() -> FactsFactory:
+    """根据环境变量配置决定默认的数据源工厂（Live 真实多源 vs Mock 离线数据）。"""
+    settings = get_settings()
+    if settings.DATA_PROVIDER_MODE == "live":
+        from app.infrastructure.composite_facts_factory import CompositeFactsFactory
+
+        return CompositeFactsFactory()
+    return TokyoFactsFactory()
 
 
 def create_app(
@@ -38,7 +43,7 @@ def create_app(
     # 将核心依赖挂到 app.state，路由层通过 Depends 获取
     application.state.repository = repository or InMemoryTravelRepository()
     application.state.clock = clock or SystemClock()
-    application.state.facts_factory = facts_factory or TokyoFactsFactory()
+    application.state.facts_factory = facts_factory or get_default_facts_factory()
 
     @application.middleware("http")
     async def request_id_middleware(request: Request, call_next):
@@ -62,31 +67,10 @@ def create_app(
         expose_headers=["Location", "ETag", "X-Request-ID"],
     )
 
-    # 注册所有 API 路由
-    application.include_router(health_router)
-    application.include_router(trips_router)
-    application.include_router(planning_router)
-    application.include_router(plans_router)
-    application.include_router(feedback_router)
-    application.include_router(manual_edits_router)
+    # 注册所有 API v1 路由
+    application.include_router(api_v1_router)
 
     return application
 
 
 app = create_app()
-
-
-def get_default_facts_factory() -> FactsFactory:
-    settings = get_settings()
-    if settings.DATA_PROVIDER_MODE == "live":
-        from app.infrastructure.composite_facts_factory import CompositeFactsFactory
-        from app.providers.poi.overpass import OverpassPoiProvider
-        from app.providers.route.osrm import OSRMRouteProvider
-        from app.providers.weather.open_meteo import OpenMeteoWeatherProvider
-
-        return CompositeFactsFactory(
-            weather_provider=OpenMeteoWeatherProvider(),
-            poi_provider=OverpassPoiProvider(),
-            route_provider=OSRMRouteProvider(),
-        )
-    return TokyoFactsFactory()

@@ -1,0 +1,14 @@
+.mapContainer {
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--line, #e5e7eb);
+  background: #f4f8f6;
+  margin-bottom: 18px;
+}
+
+.mapSvg {
+  display: block;
+  width: 100%;
+  height: auto;
+}

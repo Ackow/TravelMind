@@ -1,11 +1,9 @@
 from fastapi import APIRouter
-
 from app.core.config import get_settings
 
 router = APIRouter(tags=["system"])
 
 
-# 健康检查接口
 @router.get("/health/live", operation_id="get_liveness", summary="检查 API 进程是否存活")
 def get_liveness() -> dict[str, str]:
     settings = get_settings()

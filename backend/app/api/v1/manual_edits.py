@@ -1,7 +1,5 @@
 from uuid import UUID
-
 from fastapi import APIRouter, status
-
 from app.api.dependencies import ClockDep, FactsFactoryDep, RepositoryDep
 from app.api.schemas import (
     CurrentPlanResponse,
@@ -23,7 +21,6 @@ router = APIRouter(
     status_code=status.HTTP_201_CREATED,
     operation_id="create_manual_plan_edit",
 )
-# 接收用户对计划的手动编辑，保存后返回新计划版本和规划记录
 def create_manual_plan_edit(
     trip_id: UUID,
     payload: ManualPlanEditRequest,

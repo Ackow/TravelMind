@@ -913,7 +913,60 @@ Query：`cursor`、`limit`。返回分页 `FeedbackRecord`，按创建时间倒�
 
 返回文件流，并设置安全的 `Content-Disposition`。任务未完成返回 `409 EXPORT_NOT_READY`；过期返回 `410 EXPORT_EXPIRED`。
 
-## 16. HTTP 状态码与错误码
+## 16. Agent 智能体编排接口 (LangGraph Orchestration & SSE Stream)
+
+### 16.1 `POST /api/v1/agent/trips/plan/stream`
+
+启动 LangGraph 状态图规划流程，并通过 Server-Sent Events (SSE) 实时推送每个节点的执行状态与审计日志。
+
+*   **请求类型**：`POST`
+*   **请求体**：`TripRequest`
+*   **响应头**：`Content-Type: text/event-stream`, `Cache-Control: no-cache`
+*   **SSE 数据块结构 (JSON Lines)**：
+
+```json
+{
+  "node": "research_facts",
+  "status": "planning",
+  "events": [
+    {
+      "node": "research_facts",
+      "message": "正在调研目的地 [Nanjing] 的真实气象与地点数据...",
+      "timestamp": "2026-08-18T12:00:00Z"
+    }
+  ],
+  "summary": null
+}
+```
+
+当流程执行到 `prepare_review` 节点时，`summary` 将携带 Markdown 审阅摘要，图自动在 `human_interrupt` 处安全挂起。
+
+### 16.2 `POST /api/v1/agent/trips/{trip_id}/resume`
+
+人在回路（Human-in-the-Loop）：用户审阅完成后，注入批准或修改指令，唤醒挂起的中断节点。
+
+*   **请求类型**：`POST`
+*   **请求体**：
+
+```json
+{
+  "action": "approve", // "approve" | "modify"
+  "feedback": "第二天下午多安排室内咖啡厅休息" // action 为 modify 时提供
+}
+```
+
+*   **响应体**：
+
+```json
+{
+  "trip_id": "trip_nanjing_1723980000",
+  "status": "approved", // "approved" | "user_feedback"
+  "current_itinerary": { /* 完整行程模型 */ },
+  "audit_events": [ /* 全流程审计事件日志 */ ]
+}
+```
+
+## 17. HTTP 状态码与错误码
 
 | HTTP | 错误码 | 场景 | 可重试 |
 |---:|---|---|---:|
