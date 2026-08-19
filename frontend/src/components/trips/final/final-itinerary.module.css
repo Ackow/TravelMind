@@ -366,16 +366,17 @@
 
 .activityRow {
   display: grid;
-  grid-template-columns: 80px 30px 1fr 90px 140px 85px;
-  align-items: center;
-  gap: 12px;
-  padding: 8px 0;
+  grid-template-columns: 68px 26px minmax(140px, 1.4fr) 60px minmax(130px, 1.8fr) 65px;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 0;
 }
 
 .activityTimeCol {
   display: flex;
   align-items: center;
   gap: 8px;
+  padding-top: 2px;
 }
 
 .timeNodeWrapper {
@@ -400,7 +401,7 @@
   position: absolute;
   top: 9px;
   width: 2px;
-  height: 34px;
+  height: 38px;
   background: #e5e7eb;
   z-index: 1;
 }
@@ -415,37 +416,50 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  padding-top: 2px;
 }
 
 .actTitleArea {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
+  min-width: 0;
 }
 
 .actTitle {
-  font-size: 0.96rem;
+  font-size: 0.94rem;
   font-weight: 650;
   color: var(--ink, #102e2a);
+  line-height: 1.4;
+  word-break: break-word;
+  overflow-wrap: anywhere;
 }
 
 .actDuration {
-  font-size: 0.86rem;
+  font-size: 0.84rem;
   color: var(--muted, #5b706b);
   text-align: right;
+  padding-top: 2px;
+  white-space: nowrap;
 }
 
 .actTransit {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-start;
+  justify-content: flex-start;
+  min-width: 0;
 }
 
 .transitBadge {
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   color: var(--muted, #5b706b);
   display: inline-flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 5px;
+  line-height: 1.4;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  padding: 4px 8px;
+  border-radius: 6px;
 }
 
 .actCost {
@@ -453,6 +467,8 @@
   font-weight: 750;
   color: var(--ink, #102e2a);
   text-align: right;
+  padding-top: 2px;
+  white-space: nowrap;
 }
 
 /* Sidebar Budget Progress */
@@ -653,5 +669,125 @@
   }
   .statsRow {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* =========================================================================
+   PDF 导出与打印专用精细排版样式 (@media print)
+   ========================================================================= */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 12mm 15mm;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .pageContainer {
+    background: #ffffff !important;
+    padding: 0 !important;
+    min-height: auto !important;
+  }
+
+  .contentWrapper {
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
+
+  /* 隐藏在打印件中不需要的网页交互元素 */
+  .toast,
+  .heroActions,
+  .fullscreenBtn,
+  .accordionIcon {
+    display: none !important;
+  }
+
+  /* 标题与基本信息紧凑美观 */
+  .topHeaderRow {
+    margin-bottom: 12px !important;
+    border-bottom: 2px solid #123f3a !important;
+    padding-bottom: 10px !important;
+  }
+
+  .heroTitle {
+    font-size: 1.6rem !important;
+    color: #123f3a !important;
+    margin-bottom: 4px !important;
+  }
+
+  .heroSubtitle {
+    font-size: 0.85rem !important;
+    margin-bottom: 4px !important;
+  }
+
+  /* 核心数据卡片单行紧凑排列 */
+  .statsRow {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 8px !important;
+    margin-bottom: 12px !important;
+  }
+
+  .statCard {
+    padding: 8px 10px !important;
+    border: 1px solid #cbd5e1 !important;
+    background: #f8fafc !important;
+  }
+
+  .statValue {
+    font-size: 0.95rem !important;
+  }
+
+  .validationBanner {
+    padding: 6px 12px !important;
+    margin-bottom: 12px !important;
+  }
+
+  /* 主栅格改为上下自然流式排版 */
+  .mainGrid {
+    display: block !important;
+  }
+
+  .leftCol,
+  .rightCol {
+    width: 100% !important;
+  }
+
+  /* 每日日程卡片：避免被跨页截断 */
+  .dayCard {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    margin-bottom: 14px !important;
+    border: 1px solid #cbd5e1 !important;
+    box-shadow: none !important;
+  }
+
+  .dayBody {
+    display: block !important;
+    padding: 10px 14px !important;
+  }
+
+  .activityItem {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    padding: 6px 0 !important;
+  }
+
+  /* 右侧边栏在打印时作为附录整齐展示 */
+  .rightCol {
+    margin-top: 16px !important;
+  }
+
+  .card {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    border: 1px solid #cbd5e1 !important;
+    box-shadow: none !important;
+    margin-bottom: 14px !important;
   }
 }

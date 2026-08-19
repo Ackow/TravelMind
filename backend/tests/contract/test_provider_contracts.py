@@ -1,6 +1,8 @@
-from datetime import date
 import os
+from datetime import date
+
 import pytest
+
 from app.core.config import get_settings
 from app.domain.common import DateRange, GeoPoint
 from app.domain.research import Place, RouteMatrixCell, RouteMatrixStatus, WeatherDay
@@ -15,10 +17,10 @@ from app.providers.weather.amap import AmapWeatherProvider
 from app.providers.weather.open_meteo import OpenMeteoWeatherProvider
 from app.providers.weather.qweather import QWeatherProvider
 
-
 # ==========================================
 # 1. 全球开源数据源契约测试 (免 Key)
 # ==========================================
+
 
 def test_open_meteo_weather_satisfies_contract() -> None:
     """验证 Open-Meteo 全球天气适配器输出符合领域模型契约。"""
@@ -108,6 +110,7 @@ def test_osrm_route_satisfies_contract() -> None:
 # 2. 国内高精度商业数据源契约测试 (高德 AMap)
 # ==========================================
 
+
 def test_amap_poi_and_route_satisfies_contract() -> None:
     """验证高德地图国内高精度 POI 检索与路线矩阵契约 (配置 AMAP_API_KEY 时执行)。"""
     settings = get_settings()
@@ -115,6 +118,9 @@ def test_amap_poi_and_route_satisfies_contract() -> None:
 
     if not api_key:
         pytest.skip("未在 .env 中配置 AMAP_API_KEY，跳过高德接口测试")
+
+    if os.getenv("RUN_LIVE_AMAP_TESTS") != "1":
+        pytest.skip("默认跳过高德实时网络接口测试以节约当月 API 配额（设置环境变量 RUN_LIVE_AMAP_TESTS=1 可显式启用）")
 
     # 1. 测试高德 POI 周边搜索
     poi_provider = AmapPoiProvider(api_key=api_key)
@@ -135,13 +141,17 @@ def test_amap_poi_and_route_satisfies_contract() -> None:
     route_provider = AmapRouteProvider(api_key=api_key)
     origins = [("nanjing_south_station", GeoPoint(latitude=31.9696, longitude=118.7972))]
     destinations = [("sun_yat_sen_mausoleum", GeoPoint(latitude=32.0622, longitude=118.8488))]
-    cells = route_provider.get_route_matrix(origins=origins, destinations=destinations, mode=TransportMode.PUBLIC_TRANSIT)
+    cells = route_provider.get_route_matrix(
+        origins=origins, destinations=destinations, mode=TransportMode.PUBLIC_TRANSIT
+    )
 
     assert len(cells) == 1
     c = cells[0]
     assert c.status == RouteMatrixStatus.OK
-    cost_str = f"{c.cost.amount/100:.1f}元" if c.cost else "免费"
-    print(f"  [高德路线] {c.origin_place_id} -> {c.destination_place_id} | 耗时: {c.duration_minutes}分钟 | 距离: {c.distance_meters}米 | 预估花费: {cost_str}")
+    cost_str = f"{c.cost.amount / 100:.1f}元" if c.cost else "免费"
+    print(
+        f"  [高德路线] {c.origin_place_id} -> {c.destination_place_id} | 耗时: {c.duration_minutes}分钟 | 距离: {c.distance_meters}米 | 预估花费: {cost_str}"
+    )
 
 
 def test_amap_weather_satisfies_contract() -> None:
@@ -161,7 +171,9 @@ def test_amap_weather_satisfies_contract() -> None:
     print(f"\n[高德 AMap] 国内真实天气预报返回（共 {len(results)} 天）:")
     for w in results:
         assert isinstance(w, WeatherDay)
-        print(f"  日期: {w.date} | 状况: {w.condition.value:<10} | 气温: {w.temperature_min_c}~{w.temperature_max_c}C | 适宜度: {w.outdoor_suitability.value}")
+        print(
+            f"  日期: {w.date} | 状况: {w.condition.value:<10} | 气温: {w.temperature_min_c}~{w.temperature_max_c}C | 适宜度: {w.outdoor_suitability.value}"
+        )
 
 
 def test_qweather_satisfies_contract() -> None:
@@ -182,16 +194,21 @@ def test_qweather_satisfies_contract() -> None:
         print(f"\n[和风 QWeather] 国内精准天气返回（共 {len(results)} 天）:")
         for w in results:
             assert isinstance(w, WeatherDay)
-            print(f"  日期: {w.date} | 状况: {w.condition.value:<10} | 气温: {w.temperature_min_c}~{w.temperature_max_c}C")
+            print(
+                f"  日期: {w.date} | 状况: {w.condition.value:<10} | 气温: {w.temperature_min_c}~{w.temperature_max_c}C"
+            )
     except ProviderError as exc:
         if "invalid-host" in str(exc).lower():
-            pytest.skip(f"和风天气提示 invalid-host（需要在控制台查看项目的专属 API Host 并在 .env 中配置 QWEATHER_HOST）: {exc}")
+            pytest.skip(
+                f"和风天气提示 invalid-host（需要在控制台查看项目的专属 API Host 并在 .env 中配置 QWEATHER_HOST）: {exc}"
+            )
         raise
 
 
 # ==========================================
 # 3. 智能双模路由器 (CompositeFactsFactory) 路由测试
 # ==========================================
+
 
 def test_composite_facts_factory_dual_mode_routing() -> None:
     """验证事实工厂的国内/海外地理围栏自动分流能力。"""

@@ -10,17 +10,20 @@ from app.application.facts import FactsFactory
 from app.application.repository import TravelRepository
 from app.core.config import get_settings
 from app.infrastructure.memory_repository import InMemoryTravelRepository
-from app.infrastructure.tokyo_facts_factory import TokyoFactsFactory
+from app.infrastructure.nanjing_facts_factory import NanjingFactsFactory
 
 
 def get_default_facts_factory() -> FactsFactory:
-    """根据环境变量配置决定默认的数据源工厂（Live 真实多源 vs Mock 离线数据）。"""
     settings = get_settings()
+    if settings.USE_MCP_TOOLS:
+        from app.infrastructure.mcp_facts_factory import McpFactsFactory
+
+        return McpFactsFactory()
     if settings.DATA_PROVIDER_MODE == "live":
         from app.infrastructure.composite_facts_factory import CompositeFactsFactory
 
         return CompositeFactsFactory()
-    return TokyoFactsFactory()
+    return NanjingFactsFactory()
 
 
 def create_app(

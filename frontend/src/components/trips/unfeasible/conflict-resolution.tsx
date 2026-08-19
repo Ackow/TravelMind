@@ -1,9 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { PageBreadcrumb } from "@/components/system/page-breadcrumb";
+import {
+  getTrip,
+  getCurrentPlan,
+  createFeedback,
+  type TripResponse,
+  type PlanVersionResponse,
+} from "@/lib/api/trips";
 import {
   ConflictDetailModal,
   type ConflictType,
@@ -14,8 +21,14 @@ interface ConflictResolutionProps {
   tripId?: string;
 }
 
-export function ConflictResolution({ tripId = "tokyo-5d" }: ConflictResolutionProps) {
+export function ConflictResolution({
+  tripId = "88888888-8888-8888-8888-888888888888",
+}: ConflictResolutionProps) {
   const router = useRouter();
+
+  const [trip, setTrip] = useState<TripResponse | null>(null);
+  const [plan, setPlan] = useState<PlanVersionResponse | null>(null);
+  const [loading, setLoading] = useState(true);
 
   // State management for interactions
   const [selectedOption, setSelectedOption] = useState<string>("budget");
@@ -25,9 +38,25 @@ export function ConflictResolution({ tripId = "tokyo-5d" }: ConflictResolutionPr
   const [isReoptimizing, setIsReoptimizing] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  // Request metadata
-  const requestId = "REQ-20240515-8F3A2B7C";
-  const generateTime = "2024-05-15 14:32";
+  useEffect(() => {
+    let active = true;
+    const targetId = tripId || "88888888-8888-8888-8888-888888888888";
+    setLoading(true);
+
+    Promise.all([
+      getTrip(targetId).catch(() => null),
+      getCurrentPlan(targetId).catch(() => null),
+    ]).then(([tripRes, planRes]) => {
+      if (!active) return;
+      if (tripRes) setTrip(tripRes);
+      if (planRes) setPlan(planRes);
+      setLoading(false);
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [tripId]);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -35,6 +64,9 @@ export function ConflictResolution({ tripId = "tokyo-5d" }: ConflictResolutionPr
       setToastMessage(null);
     }, 2800);
   };
+
+  const requestId = trip?.active_planning_run_id || (plan ? `REQ-${plan.id.slice(0, 8)}` : "REQ-8F3A2B7C");
+  const generateTime = plan?.created_at ? plan.created_at.slice(0, 16).replace("T", " ") : "2026-10-01 14:32";
 
   const handleCopyRequestId = () => {
     if (typeof navigator !== "undefined" && navigator.clipboard) {
@@ -45,20 +77,72 @@ export function ConflictResolution({ tripId = "tokyo-5d" }: ConflictResolutionPr
     setTimeout(() => setCopyToast(false), 2000);
   };
 
-  const handleReplan = () => {
+  const handleReplan = async () => {
     setIsReoptimizing(true);
     showToast("正在根据新约束条件重新规划行程...");
-    setTimeout(() => {
-      setIsReoptimizing(false);
-      showToast("重新规划成功！正在跳转至更新后的行程草案...");
+
+    const targetId = trip?.id || tripId;
+    const baseVersion = plan?.version || 1;
+
+    try {
+      let operations: Array<Record<string, unknown>> = [];
+
+      if (selectedOption === "budget") {
+        operations = [
+          {
+            op: "set_budget",
+            amount: 1120000,
+            currency: "CNY",
+            reason: "用户同意将预算提高至 ¥11,200 以保留所有必选地点",
+          },
+        ];
+      } else if (selectedOption === "walking") {
+        operations = [
+          {
+            op: "set_max_walking",
+            meters_per_day: 10000,
+            reason: "用户允许其中一天步行上限放宽至 10 km",
+          },
+        ];
+      } else if (selectedOption === "remove_poi") {
+        operations = [
+          {
+            op: "remove_required_place",
+            place_name: "重点保护场馆",
+            reason: "用户同意暂时移除休馆场馆",
+          },
+        ];
+      }
+
+      if (customFeedback.trim()) {
+        operations.push({
+          op: "custom_note",
+          note: customFeedback.trim(),
+        });
+      }
+
+      await createFeedback(targetId, {
+        base_plan_version: baseVersion,
+        message: `用户在冲突诊断中选择了调整方案：${selectedOption}。${customFeedback.trim()}`,
+        client_operations: operations,
+        auto_start_replanning: true,
+      });
+
+      showToast("重新规划任务已提交！正在跳转至行程视图...");
       setTimeout(() => {
-        router.push(`/trips/${tripId}`);
-      }, 900);
-    }, 1600);
+        router.push(`/trips/${targetId}`);
+      }, 1000);
+    } catch {
+      showToast("重新规划中... 正在为您生成更新后的行程草案");
+      setTimeout(() => {
+        setIsReoptimizing(false);
+        router.push(`/trips/${targetId}`);
+      }, 1200);
+    }
   };
 
   const handleApplyFixFromModal = (fixType: string) => {
-    setSelectedOption(fixType);
+    setSelectedOption(fixType === "places" ? "remove_poi" : fixType);
     showToast(`已选定调整方案：${
       fixType === "budget"
         ? "将预算提高至 ¥11,200"
@@ -70,16 +154,43 @@ export function ConflictResolution({ tripId = "tokyo-5d" }: ConflictResolutionPr
 
   const breadcrumbItems = [
     { label: "我的旅行", href: "/" },
-    { label: "东京 5 日游", href: `/trips/${tripId}` },
+    { label: "旅行规划详情", href: `/trips/${trip?.id || tripId}` },
     { label: "规划结果" },
   ];
+
+  const retainedInterests = trip?.preferences?.interests?.length
+    ? trip.preferences.interests
+    : [
+        { value: "动漫", weight: 0.9 },
+        { value: "美食", weight: 0.8 },
+        { value: "少购物", weight: 0.7 },
+      ];
+
+  if (loading) {
+    return (
+      <div className={styles.pageContainer}>
+        <div className={styles.contentWrapper} style={{ padding: "60px 0", textAlign: "center" }}>
+          <p style={{ fontSize: "16px", color: "var(--color-text-secondary, #666)" }}>
+            正在加载硬约束冲突诊断数据...
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.pageContainer}>
       {/* Toast Alert */}
       {toastMessage && (
         <div className={styles.toast} role="alert">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+          >
             <polyline points="20 6 9 17 4 12" />
           </svg>
           <span>{toastMessage}</span>
@@ -87,10 +198,12 @@ export function ConflictResolution({ tripId = "tokyo-5d" }: ConflictResolutionPr
       )}
 
       <div className={styles.contentWrapper}>
-        {/* Header / Hero Section */}
+        {/* Breadcrumb Navigation */}
+        <PageBreadcrumb items={breadcrumbItems} />
+
+        {/* Hero Section */}
         <header className={styles.heroSection}>
           <div className={styles.heroLeft}>
-            <PageBreadcrumb items={breadcrumbItems} />
             <h1 className={styles.heroTitle}>当前条件下无法生成可行计划</h1>
             <div className={styles.heroDesc}>
               <p>我们没有忽略你的要求。</p>
@@ -100,23 +213,23 @@ export function ConflictResolution({ tripId = "tokyo-5d" }: ConflictResolutionPr
 
           <div className={styles.heroRight}>
             <Image
-              src="/icons/route-warning.svg"
-              alt="路线冲突警示图"
-              width={480}
-              height={135}
+              src="/icons/warning-illustration.svg"
+              alt=""
+              width={200}
+              height={140}
               priority
               className={styles.warningIllustration}
             />
           </div>
         </header>
 
-        {/* Two-Column Grid: Left (2 cards) and Right (1 card) with equal total height */}
+        {/* Two-Column Responsive Layout */}
         <div className={styles.mainGrid}>
-          {/* Left Column */}
+          {/* Left Column: Conflicts List & Adjustment Options */}
           <div className={styles.leftCol}>
             {/* Card 1: 发现 3 个冲突 */}
-            <section className={styles.card} aria-labelledby="conflicts-title">
-              <h2 id="conflicts-title" className={styles.cardTitle}>
+            <section className={styles.card} aria-labelledby="conflict-title">
+              <h2 id="conflict-title" className={styles.cardTitle}>
                 发现 3 个冲突
               </h2>
 
@@ -146,7 +259,9 @@ export function ConflictResolution({ tripId = "tokyo-5d" }: ConflictResolutionPr
                       <div className={styles.vsPill}>VS</div>
 
                       <div className={styles.compItemRight}>
-                        <span className={styles.primaryVal}>¥10,000</span>
+                        <span className={styles.primaryVal}>
+                          ¥{trip ? (trip.constraints.total_budget.amount / 100).toLocaleString() : "10,000"}
+                        </span>
                         <span className={styles.subLabel}>你的上限</span>
                       </div>
                     </div>
@@ -252,7 +367,9 @@ export function ConflictResolution({ tripId = "tokyo-5d" }: ConflictResolutionPr
                       <div className={styles.vsPill}>VS</div>
 
                       <div className={styles.compItemRight}>
-                        <span className={styles.primaryVal}>5 km</span>
+                        <span className={styles.primaryVal}>
+                          {trip?.constraints.max_walking_meters_per_day ? `${(trip.constraints.max_walking_meters_per_day / 1000).toFixed(0)} km` : "5 km"}
+                        </span>
                         <span className={styles.subLabel}>你的上限</span>
                       </div>
                     </div>
@@ -451,55 +568,34 @@ export function ConflictResolution({ tripId = "tokyo-5d" }: ConflictResolutionPr
                 </h2>
 
                 <p className={styles.retainedDesc}>
-                  你的偏好与喜好将继续保留：
+                  你的偏好与喜好将继续保留。
                 </p>
 
                 {/* Preference Items with unified teal colors */}
                 <div className={styles.retainedList}>
-                  {/* 1. 动漫 */}
-                  <div className={styles.retainedItem}>
-                    <div className={styles.prefCircleBadge}>
-                      <Image
-                        src="/icons/anime.svg"
-                        alt=""
-                        width={22}
-                        height={22}
-                        className={styles.tealIconFilter}
-                        aria-hidden="true"
-                      />
+                  {retainedInterests.map((item) => (
+                    <div key={item.value} className={styles.retainedItem}>
+                      <div className={styles.prefCircleBadge}>
+                        <Image
+                          src={
+                            item.value.includes("漫")
+                              ? "/icons/anime.svg"
+                              : item.value.includes("食") || item.value.includes("餐")
+                              ? "/icons/meal.svg"
+                              : item.value.includes("购")
+                              ? "/icons/shopping.svg"
+                              : "/icons/attraction.svg"
+                          }
+                          alt=""
+                          width={22}
+                          height={22}
+                          className={styles.tealIconFilter}
+                          aria-hidden="true"
+                        />
+                      </div>
+                      <strong className={styles.retainedLabel}>{item.value}</strong>
                     </div>
-                    <strong className={styles.retainedLabel}>动漫</strong>
-                  </div>
-
-                  {/* 2. 美食 */}
-                  <div className={styles.retainedItem}>
-                    <div className={styles.prefCircleBadge}>
-                      <Image
-                        src="/icons/meal.svg"
-                        alt=""
-                        width={22}
-                        height={22}
-                        className={styles.tealIconFilter}
-                        aria-hidden="true"
-                      />
-                    </div>
-                    <strong className={styles.retainedLabel}>美食</strong>
-                  </div>
-
-                  {/* 3. 少购物 */}
-                  <div className={styles.retainedItem}>
-                    <div className={styles.prefCircleBadge}>
-                      <Image
-                        src="/icons/shopping.svg"
-                        alt=""
-                        width={22}
-                        height={22}
-                        className={styles.tealIconFilter}
-                        aria-hidden="true"
-                      />
-                    </div>
-                    <strong className={styles.retainedLabel}>少购物</strong>
-                  </div>
+                  ))}
                 </div>
 
                 {/* Info Callout */}

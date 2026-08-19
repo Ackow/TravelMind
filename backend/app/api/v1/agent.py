@@ -1,11 +1,12 @@
-from datetime import datetime
 import json
 from collections.abc import AsyncGenerator
-from fastapi import APIRouter, HTTPException
+from datetime import datetime
+from typing import Any
+
+from fastapi import APIRouter
 from fastapi.responses import StreamingResponse
 from langgraph.types import Command
 from pydantic import BaseModel
-from typing import Any
 
 from app.agent.graph import create_travel_agent_graph
 from app.agent.state import PlanStatus
@@ -23,7 +24,7 @@ class StartPlanningResponse(BaseModel):
 
 
 class ResumePlanningRequest(BaseModel):
-    action: str     # "approve" | "modify"
+    action: str  # "approve" | "modify"
     feedback: str | None = None
 
 

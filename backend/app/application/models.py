@@ -144,6 +144,7 @@ class FeedbackRecord(ApplicationModel):
 
 class LLMCallRecord(ApplicationModel):
     """记录每一次大模型调用的审计流水。"""
+
     id: UUID
     trip_id: UUID
     task: str  # e.g. "parse_feedback", "rerank_places", "generate_summary"

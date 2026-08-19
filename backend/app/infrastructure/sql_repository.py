@@ -1,6 +1,6 @@
 from uuid import UUID
+
 from sqlalchemy import select
-from sqlalchemy.orm import Session
 
 from app.application.errors import ApplicationError
 from app.application.models import (
@@ -17,7 +17,6 @@ from app.persistence.converters import (
     plan_to_table,
     run_to_table,
     table_to_event,
-    table_to_feedback,
     table_to_plan,
     table_to_run,
     table_to_trip,
@@ -52,13 +51,19 @@ class SqlAlchemyTravelRepository(TravelRepository):
             row = session.get(TripTable, trip_id)
             return None if row is None else table_to_trip(row)
 
+    def list_trips(self, limit: int = 50) -> list[TripRecord]:
+        with self._session_factory() as session:
+            stmt = select(TripTable).order_by(TripTable.updated_at.desc()).limit(limit)
+            rows = session.scalars(stmt).all()
+            return [table_to_trip(r) for r in rows]
+
     def save_trip(self, trip: TripRecord) -> None:
         """带乐观锁保护的保存操作"""
         with self._session_factory() as session:
             row = session.get(TripTable, trip.id)
             if row is None:
                 raise ValueError("trip does not exist")
-            
+
             # 乐观锁校验：如果传入版本号与数据库不一致，抛出版本冲突
             if row.revision >= trip.revision:
                 raise ApplicationError(
@@ -66,7 +71,7 @@ class SqlAlchemyTravelRepository(TravelRepository):
                     f"旅行状态已被其他操作更新 (当前版本: {row.revision}, 提交版本: {trip.revision})",
                     409,
                 )
-            
+
             row.status = trip.status
             row.revision = trip.revision
             row.current_plan_version = trip.current_plan_version

@@ -1,7 +1,7 @@
 {
-  "origin": "南京",
-  "destination": "东京",
-  "destination_timezone": "Asia/Tokyo",
+  "origin": "杭州",
+  "destination": "南京",
+  "destination_timezone": "Asia/Shanghai",
   "date_range": {
     "start_date": "2026-10-01",
     "end_date": "2026-10-05"
@@ -9,7 +9,7 @@
   "travelers": 2,
   "preferences": {
     "interests": [
-      {"value": "动漫", "weight": 1.0},
+      {"value": "文化古迹", "weight": 1.0},
       {"value": "美食", "weight": 0.8},
       {"value": "城市漫步", "weight": 0.7}
     ],
@@ -21,7 +21,7 @@
     "must_visit_place_names": []
   },
   "constraints": {
-    "total_budget": {"amount": 1000000, "currency": "CNY"},
+    "total_budget": {"amount": 500000, "currency": "CNY"},
     "budget_is_hard_limit": true,
     "daily_start_time": "09:00",
     "daily_end_time": "21:00",
@@ -35,5 +35,5 @@
   },
   "locale": "zh-CN",
   "display_currency": "CNY",
-  "notes": "阶段 1 固定教学样例"
+  "notes": "阶段 1 固定教学样例：杭州 -> 南京 5 日文化美食游"
 }

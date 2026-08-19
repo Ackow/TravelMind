@@ -402,13 +402,39 @@
 .dayGroupContainer {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
 }
 
 .dayGroupSection {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  border: 1px solid var(--line, #e5e7eb);
+  border-radius: 12px;
+  background: var(--surface, #ffffff);
+  padding: 14px 18px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  transition: all 180ms ease;
+}
+
+.dayGroupSection:hover {
+  border-color: #cbd5e1;
+}
+
+.dayGroupHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 2px 0;
+  cursor: pointer;
+  text-align: left;
+  user-select: none;
+}
+
+.dayGroupHeader:hover .dayGroupTitle {
+  color: #0f766e;
 }
 
 .dayGroupTitle {
@@ -416,6 +442,34 @@
   font-weight: 750;
   color: var(--ink, #102e2a);
   margin: 0;
+  transition: color 160ms ease;
+}
+
+.dayChevron {
+  font-size: 0.82rem;
+  color: #9ca3af;
+  transition: transform 200ms ease;
+}
+
+.dayChevronOpen {
+  transform: rotate(180deg);
+}
+
+.dayCollapseWrapper {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 220ms cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+.dayCollapseOpen {
+  grid-template-rows: 1fr;
+}
+
+.dayCollapseInner {
+  min-height: 0;
+  overflow: hidden;
+  padding-top: 10px;
 }
 
 .changesList {

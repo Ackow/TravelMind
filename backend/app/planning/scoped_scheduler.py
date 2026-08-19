@@ -9,7 +9,6 @@ from app.domain.itinerary import (
     ActivitySourceType,
     DayPlan,
     DayStatistics,
-    IndoorOutdoor,
     RouteLeg,
 )
 from app.domain.research import Place, RouteMatrix

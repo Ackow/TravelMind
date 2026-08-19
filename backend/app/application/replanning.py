@@ -1,4 +1,3 @@
-from datetime import UTC, datetime
 from uuid import UUID, uuid4
 
 from app.application.clock import Clock
@@ -85,7 +84,8 @@ def execute_scoped_replanning(
         update={
             "days": new_days,
             "generated_at": now,
-            "general_notes": base_plan.itinerary.general_notes + [f"由局部重规划生成 (基于 v{base_version})"],
+            "general_notes": base_plan.itinerary.general_notes
+            + [f"由局部重规划生成 (基于 v{base_version})"],
         }
     )
 

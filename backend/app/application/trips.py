@@ -32,6 +32,11 @@ def get_trip(repository: TravelRepository, trip_id: UUID) -> TripRecord | None:
     return repository.get_trip(trip_id)
 
 
+def list_trips(repository: TravelRepository, limit: int = 50) -> list[TripRecord]:
+    """按更新时间降序获取旅行记录列表。"""
+    return repository.list_trips(limit=limit)
+
+
 def save_trip(repository: TravelRepository, trip: TripRecord) -> None:
     """保存旅行记录。"""
     repository.save_trip(trip)

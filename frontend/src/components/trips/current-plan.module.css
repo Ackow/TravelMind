@@ -287,13 +287,14 @@
 .activityCard {
   position: relative;
   display: grid;
-  grid-template-columns: 32px 1fr 75px 22px;
+  grid-template-columns: 32px 1fr auto auto;
+  gap: 12px;
   align-items: center;
   min-height: 66px;
   border: 1px solid #d7dfdc;
   border-radius: 7px;
   background: #fff;
-  padding: 10px 12px;
+  padding: 10px 14px;
 }
 
 .activityMenu {
@@ -340,28 +341,38 @@
   display: grid;
 }
 .activityCard > div strong {
-  font-size: 0.82rem;
+  font-size: 0.88rem;
 }
 .activityCard small {
   color: #596c68;
-  font-size: 0.7rem;
+  font-size: 0.75rem;
 }
 .activityCard > span {
   display: grid;
   justify-items: end;
+  min-width: 65px;
+  gap: 2px;
+  padding-right: 4px;
 }
 .activityCard > span b {
-  font-size: 0.78rem;
-  font-weight: 500;
+  font-size: 0.95rem;
+  font-weight: 750;
+  color: var(--ink, #102e2a);
+}
+.activityCard > span small {
+  font-size: 0.8rem;
+  color: #596c68;
 }
 .activityCard button {
   display: grid;
   place-items: center;
   height: 37px;
+  width: 32px;
+  margin-left: 6px;
   border: 0;
   border-left: 1px solid #e0e5e3;
   background: transparent;
-  font-size: 1.2rem;
+  cursor: pointer;
 }
 .transferNode {
   padding: 0 0 10px;

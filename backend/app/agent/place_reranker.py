@@ -1,6 +1,7 @@
 from pydantic import BaseModel, ConfigDict, Field
+
 from app.agent.llm_client import LLMClient
-from app.domain.research import Place, WeatherDay, IndoorOutdoor
+from app.domain.research import Place, WeatherDay
 from app.domain.trip import TripPreferences
 
 
@@ -45,8 +46,8 @@ class PlaceReranker:
         place_descriptions = [
             f"""
             - ID: {p.id} | 名称: {p.name} 
-            | 分类: {', '.join(c.value for c in p.categories)} 
-            | 室内外: {p.indoor_outdoor.value} | 标签: {','.join(p.tags)}
+            | 分类: {", ".join(c.value for c in p.categories)} 
+            | 室内外: {p.indoor_outdoor.value} | 标签: {",".join(p.tags)}
             """
             for p in places
         ]
@@ -66,7 +67,7 @@ class PlaceReranker:
         user_prompt = f"""
         用户偏好:
         - 兴趣: {interests_desc}
-        - 避开: {', '.join(preferences.avoid) or '无' }
+        - 避开: {", ".join(preferences.avoid) or "无"}
         - 节奏: {preferences.pace.value}
         - 当日天气: {weather_desc}
 
@@ -86,7 +87,9 @@ class PlaceReranker:
         results: list[tuple[Place, float, str]] = []
         for item in response.data.ranked_places:
             if item.place_id in place_map:
-                results.append((place_map[item.place_id], item.relevance_score, item.highlight_reason))
+                results.append(
+                    (place_map[item.place_id], item.relevance_score, item.highlight_reason)
+                )
 
             # 若有地点被 LLM 遗漏，以默认分兜底追加在末尾
             ranked_ids = {item.place_id for item in response.data.ranked_places}

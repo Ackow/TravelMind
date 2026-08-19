@@ -1,11 +1,11 @@
 import { Metadata } from "next";
-import { VersionHistory } from "@/components/trips/history/version-history";
+import { HistoryPlansList } from "@/components/trips/history-plans-list";
 
 export const metadata: Metadata = {
-  title: "计划版本历史 - TravelMind",
-  description: "查看不可变旅行计划版本历史记录、变更对比与约束校验结果",
+  title: "历史旅行计划 - TravelMind",
+  description: "查看与管理所有生成的行程计划、版本演进对比与详细路书",
 };
 
 export default function HistoryPage() {
-  return <VersionHistory tripId="tokyo-5d" />;
+  return <HistoryPlansList />;
 }

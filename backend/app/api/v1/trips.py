@@ -1,10 +1,12 @@
 from uuid import UUID
+
 from fastapi import APIRouter, Response, status
+
 from app.api.dependencies import ClockDep, RepositoryDep
 from app.api.schemas import TripCreateRequest, TripResponse
 from app.application.errors import ApplicationError
 from app.application.models import TripRecord
-from app.application.trips import create_trip, get_trip
+from app.application.trips import create_trip, get_trip, list_trips
 
 router = APIRouter(prefix="/api/v1/trips", tags=["trips"])
 
@@ -30,6 +32,19 @@ def to_trip_response(trip: TripRecord) -> TripResponse:
         created_at=trip.created_at,
         updated_at=trip.updated_at,
     )
+
+
+@router.get(
+    "",
+    response_model=list[TripResponse],
+    operation_id="list_trips",
+)
+def list_trips_endpoint(
+    repository: RepositoryDep,
+    limit: int = 50,
+) -> list[TripResponse]:
+    trips = list_trips(repository, limit=limit)
+    return [to_trip_response(t) for t in trips]
 
 
 @router.post(

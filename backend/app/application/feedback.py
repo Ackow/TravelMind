@@ -1,5 +1,6 @@
 from uuid import UUID, uuid4
 
+from app.agent.llm_client import LLMClient
 from app.application.clock import Clock
 from app.application.errors import ApplicationError
 from app.application.facts import FactsFactory
@@ -7,7 +8,6 @@ from app.application.models import FeedbackRecord, PlanningRunRecord, PlanningRu
 from app.application.planning import start_planning
 from app.application.repository import TravelRepository
 from app.domain.trip import TripRequest
-from app.agent.llm_client import LLMClient
 
 
 def _append_unique_name(values: list[str], value: str) -> None:

@@ -1,5 +1,6 @@
 from datetime import UTC, datetime
 from typing import Any
+
 from app.agent.state import PlanState, PlanStatus
 from app.domain.itinerary import ActivityKind
 
@@ -21,7 +22,7 @@ def node_propose_repairs(state: PlanState) -> dict[str, Any]:
     for violation in report.violations:
         # 策略 1：恶劣天气 / 暴雨违规 -> 将受影响日期的户外活动置换或调整
         if "weather" in violation.code.casefold() or "rain" in violation.message.casefold():
-            repairs_summary.append(f"针对天气违规: 优化雨天行程，优先调度室内高分场馆。")
+            repairs_summary.append("针对天气违规: 优化雨天行程，优先调度室内高分场馆。")
 
         # 策略 2：活动超时违规 (Day Overrun) -> 裁剪该日耗时最长的低优先级活动
         elif "overrun" in violation.code.casefold() or "time" in violation.message.casefold():
@@ -31,7 +32,9 @@ def node_propose_repairs(state: PlanState) -> dict[str, Any]:
                     # 裁剪最后一个景点，释放时间
                     new_activities = [a for a in d.activities if a.id != visits[-1].id]
                     days[d_idx] = d.model_copy(update={"activities": new_activities})
-                    repairs_summary.append(f"针对超时违规: 裁剪第 {d.day_number} 天次要活动 [{visits[-1].title}] 以满足作息时间。")
+                    repairs_summary.append(
+                        f"针对超时违规: 裁剪第 {d.day_number} 天次要活动 [{visits[-1].title}] 以满足作息时间。"
+                    )
 
     # 构建修复后的新行程对象
     repaired_itinerary = itinerary.model_copy(update={"days": days})

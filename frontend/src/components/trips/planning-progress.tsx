@@ -16,33 +16,33 @@ const STEPS = [
     icon: "/icons/clipboard-check.svg",
   },
   {
-    title: "查询天气",
-    detail: "已获得 5 天天气数据",
+    title: "查询天气与环境",
+    detail: "获取出行期间天气与降水概率",
     icon: "/icons/capability-weather.svg",
   },
   {
-    title: "搜索景点",
-    detail: "筛选出 18 个候选地点",
+    title: "检索候选景点与体验",
+    detail: "筛选出高匹配度景点与特色美食",
     icon: "/icons/search.svg",
   },
   {
-    title: "计算地点间路线",
-    detail: "正在计算 18 个地点的交通矩阵",
+    title: "计算地点间通行路线",
+    detail: "正在构建交通时间与换乘矩阵",
     icon: "/icons/train.svg",
   },
   {
-    title: "生成候选行程",
-    detail: "按区域与开放时间组合日程",
+    title: "生成候选行程排期",
+    detail: "按区域与开放时间组合每日日程",
     icon: "/icons/map-pin.svg",
   },
   {
-    title: "检查预算与时间",
-    detail: "验证预算、步行和营业时间",
+    title: "硬性约束校验与评估",
+    detail: "验证预算、单日步行上限与营业时间",
     icon: "/icons/shield-check.svg",
   },
   {
-    title: "准备草案",
-    detail: "正在整理可审阅的旅行计划",
+    title: "生成行程方案",
+    detail: "正在整理可审阅的旅行计划草案",
     icon: "/icons/edit-square.svg",
   },
 ];
@@ -51,7 +51,7 @@ const EVENT_NAMES = [
   "System",
   "Weather Tool",
   "POI Tool",
-  "Route Tool",
+  "Route Matrix",
   "Planner",
   "Rule Engine",
   "System",
@@ -129,74 +129,97 @@ export function PlanningProgress({ tripId }: { tripId: string }) {
       <main className={styles.errorState}>
         <h1>规划暂时中断</h1>
         <p>{error}</p>
-        <Link href={`/trips/${tripId}`}>返回旅行详情</Link>
+        <div>
+          <button onClick={() => window.location.reload()} type="button">
+            重新尝试
+          </button>
+          <Link href="/">返回首页</Link>
+        </div>
       </main>
     );
   }
 
+  const destination = trip?.destination || "目的地";
+
   return (
-    <main className={styles.page}>
-      <header className={styles.hero}>
-        <div>
-          <PageBreadcrumb
-            items={[
-              { label: "我的旅行", href: "/" },
-              { label: `${trip?.destination ?? "东京"} 5 日游`, href: `/trips/${tripId}` },
-              { label: "正在规划" },
-            ]}
-          />
-          <h1>正在规划你的{trip?.destination ?? "东京"}之旅</h1>
-          <p>TravelMind 正在查询事实、生成候选方案并检查约束</p>
-        </div>
-        <div className={styles.progressActions}>
-          <div
-            className={styles.progressRing}
-            style={
-              { "--progress": `${progress * 3.6}deg` } as React.CSSProperties
-            }
-          >
-            <span>{progress}%</span>
-          </div>
-          <button type="button" onClick={() => router.push(`/trips/${tripId}`)}>
-            取消规划
-          </button>
-        </div>
+    <main className={styles.container}>
+      <header className={styles.header}>
+        <PageBreadcrumb
+          items={[
+            { label: "我的旅行", href: "/" },
+            { label: `${trip?.origin ?? "出发地"} → ${destination}` },
+            { label: "正在规划" },
+          ]}
+        />
+        <h1>AI 正在为你规划行程...</h1>
+        <p>我们正在查询真实数据并验证约束，这通常需要 5–15 秒</p>
       </header>
 
+      <div className={styles.progressBar}>
+        <div
+          className={styles.progressFill}
+          style={{ width: `${progress}%` }}
+        />
+      </div>
+
       <section className={styles.layout}>
-        <section className={styles.progressCard}>
-          <h2>规划进度</h2>
-          <ol className={styles.steps}>
+        <section className={styles.mainContent}>
+          <ol className={styles.stepList}>
             {STEPS.map((step, index) => {
-              const complete = index < activeStep || activeStep >= STEPS.length;
-              const active = index === activeStep && activeStep < STEPS.length;
+              const done = activeStep > index;
+              const current = activeStep === index;
               return (
                 <li
-                  className={
-                    active
-                      ? styles.activeStep
-                      : complete
-                        ? styles.completeStep
-                        : styles.pendingStep
-                  }
+                  className={`${styles.stepItem} ${
+                    done ? styles.stepDone : current ? styles.stepCurrent : ""
+                  }`}
                   key={step.title}
                 >
-                  <span className={styles.stepState}>
-                    {complete ? "✓" : index + 1}
+                  <span className={styles.stepNumber}>
+                    {done ? (
+                      <svg
+                        fill="none"
+                        height="13"
+                        stroke="currentColor"
+                        strokeWidth="3"
+                        viewBox="0 0 24 24"
+                        width="13"
+                      >
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                    ) : (
+                      index + 1
+                    )}
                   </span>
-                  <Image src={step.icon} width={21} height={21} alt="" />
-                  <strong>{step.title}</strong>
-                  <p>{step.detail}</p>
+                  <div>
+                    <strong>{step.title}</strong>
+                    <p>{step.detail}</p>
+                  </div>
+                  {current && (
+                    <span className={styles.pulseDot} aria-hidden="true" />
+                  )}
                 </li>
               );
             })}
           </ol>
 
-          <div className={styles.events}>
-            <h3>实时事件</h3>
+          <div className={styles.terminal}>
+            <header>
+              <span />
+              <span />
+              <span />
+              <strong>实时数据检索与约束校验流水</strong>
+            </header>
             {eventRows.map((step, index) => (
-              <div key={step.title}>
-                <time>10:{31 + index}</time>
+              <div key={step.title} className={styles.logRow}>
+                <time>
+                  {new Date(Date.now() - (4 - index) * 1200).toLocaleTimeString(
+                    "zh-CN",
+                    {
+                      hour12: false,
+                    },
+                  )}
+                </time>
                 <Image src={step.icon} width={19} height={19} alt="" />
                 <span>{EVENT_NAMES[index]}</span>
                 <p>{step.detail.replace("正在", "")}</p>
@@ -210,7 +233,7 @@ export function PlanningProgress({ tripId }: { tripId: string }) {
             <h2>旅行摘要</h2>
             <div>
               <Image src="/icons/map-pin.svg" width={21} height={21} alt="" />
-              <span>{trip?.destination ?? "东京"}</span>
+              <span>{destination}</span>
             </div>
             <div>
               <Image src="/icons/calendar.svg" width={21} height={21} alt="" />
@@ -226,7 +249,7 @@ export function PlanningProgress({ tripId }: { tripId: string }) {
             <div>
               <Image src="/icons/wallet.svg" width={21} height={21} alt="" />
               <span>
-                预算 {money(trip?.constraints.total_budget.amount ?? 1000000)}
+                预算 {money(trip?.constraints.total_budget.amount ?? 800000)}
               </span>
             </div>
             <strong>偏好</strong>
@@ -241,21 +264,21 @@ export function PlanningProgress({ tripId }: { tripId: string }) {
             <h2>当前发现</h2>
             <div>
               <Image
-                src="/icons/weather-light-rain.svg"
+                src="/icons/weather-sunny.svg"
                 width={28}
                 height={28}
                 alt=""
               />
-              <span>Day 2 降雨概率 75%</span>
+              <span>已获取 {destination} 实时天气与开放时间</span>
             </div>
-            <div className={styles.warning}>
+            <div className={styles.info}>
               <Image
-                src="/icons/warning-triangle.svg"
+                src="/icons/shield-check.svg"
                 width={28}
                 height={28}
                 alt=""
               />
-              <span>镰仓户外安排可能需要调整</span>
+              <span>正在校验预算限额与单日步行负荷</span>
             </div>
             <div className={styles.info}>
               <Image
@@ -264,7 +287,7 @@ export function PlanningProgress({ tripId }: { tripId: string }) {
                 height={28}
                 alt=""
               />
-              <span>完成约束检查后会自动给出替代方案</span>
+              <span>完成约束检查后会自动生成结构化方案</span>
             </div>
           </section>
 
@@ -278,13 +301,13 @@ export function PlanningProgress({ tripId }: { tripId: string }) {
             <div>
               <Image src="/icons/map-pin.svg" width={31} height={31} alt="" />
               <span>
-                候选地点<strong>18</strong>
+                目标城市<strong>{destination}</strong>
               </span>
             </div>
             <div>
               <Image src="/icons/clock.svg" width={31} height={31} alt="" />
               <span>
-                已用时间<strong>{Math.min(42, (activeStep + 1) * 6)}s</strong>
+                已用时间<strong>{Math.min(42, (activeStep + 1) * 3)}s</strong>
               </span>
             </div>
           </section>

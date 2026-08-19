@@ -58,7 +58,7 @@ def build_conflicting_tokyo_itinerary() -> Itinerary:
 
     # 第一天：两个自由活动重叠 15 分钟，并且均晚于每日 21:00 上限。
     first_day = data["days"][0]
-    first_base = datetime.fromisoformat("2026-10-01T20:30:00+09:00")
+    first_base = datetime.fromisoformat("2026-10-01T20:30:00+08:00")
     first_day["activities"] = [
         activity(
             activity_id=1,
@@ -82,8 +82,8 @@ def build_conflicting_tokyo_itinerary() -> Itinerary:
     first_day["route_legs"] = [
         {
             "id": str(UUID(int=101)),
-            "origin_place_id": "tm_place_sensoji",
-            "destination_place_id": "tm_place_ueno_park",
+            "origin_place_id": "tm_place_fuzimiao",
+            "destination_place_id": "tm_place_laomendong",
             "mode": "walking",
             "departure_time": None,
             "arrival_time": None,
@@ -103,31 +103,31 @@ def build_conflicting_tokyo_itinerary() -> Itinerary:
         "currency": "CNY",
     }
 
-    # 第二天 fixture 为 poor，安排浅草寺室外游览触发天气冲突。
+    # 第二天 fixture 为 poor，安排夫子庙室外游览触发天气冲突。
     second_day = data["days"][1]
     second_day["activities"] = [
         activity(
             activity_id=3,
             kind="visit",
-            title="浅草寺",
-            place_id="tm_place_sensoji",
-            start_at=datetime.fromisoformat("2026-10-02T09:00:00+09:00"),
-            end_at=datetime.fromisoformat("2026-10-02T10:00:00+09:00"),
+            title="夫子庙",
+            place_id="tm_place_fuzimiao",
+            start_at=datetime.fromisoformat("2026-10-02T09:00:00+08:00"),
+            end_at=datetime.fromisoformat("2026-10-02T10:00:00+08:00"),
             indoor_outdoor="outdoor",
         )
     ]
     second_day["statistics"]["activity_count"] = 1
 
-    # 第五天是周一，东京国立博物馆明确闭馆。
+    # 第五天是周一，南京博物院明确闭馆。
     fifth_day = data["days"][4]
     fifth_day["activities"] = [
         activity(
             activity_id=4,
             kind="visit",
-            title="东京国立博物馆",
-            place_id="tm_place_tokyo_national_museum",
-            start_at=datetime.fromisoformat("2026-10-05T10:00:00+09:00"),
-            end_at=datetime.fromisoformat("2026-10-05T11:00:00+09:00"),
+            title="南京博物院",
+            place_id="tm_place_nanjing_museum",
+            start_at=datetime.fromisoformat("2026-10-05T10:00:00+08:00"),
+            end_at=datetime.fromisoformat("2026-10-05T11:00:00+08:00"),
             indoor_outdoor="indoor",
         )
     ]

@@ -1,6 +1,8 @@
 from datetime import UTC, datetime
 from typing import Any
+
 from langgraph.types import interrupt
+
 from app.agent.state import PlanState, PlanStatus
 
 
@@ -45,11 +47,13 @@ def node_human_interrupt(state: PlanState) -> dict[str, Any]:
     """节点：LangGraph 原生中断点。在此处安全挂起图执行，等待外部输入注入。"""
     # interrupt() 接收展示给用户的信息，并阻塞当前协程/线程
     # 当外部通过 Command(resume=...) 唤醒时，interrupt() 将返回用户传入的指令
-    user_input = interrupt({
-        "trip_id": state.get("trip_id", ""),
-        "summary": state.get("review_summary"),
-        "itinerary": state.get("current_itinerary"),
-    })
+    user_input = interrupt(
+        {
+            "trip_id": state.get("trip_id", ""),
+            "summary": state.get("review_summary"),
+            "itinerary": state.get("current_itinerary"),
+        }
+    )
 
     now_dt = datetime.now(UTC)
     action = user_input.get("action", "approve") if isinstance(user_input, dict) else "approve"

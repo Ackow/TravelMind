@@ -43,26 +43,22 @@ const PACES: Array<{ value: Pace; label: string; description: string }> = [
 ];
 
 const DEFAULT_REQUEST: TripCreateRequest = {
-  origin: "南京",
-  destination: "东京",
-  destination_timezone: "Asia/Tokyo",
-  date_range: { start_date: "2026-10-01", end_date: "2026-10-05" },
+  origin: "",
+  destination: "",
+  destination_timezone: "Asia/Shanghai",
+  date_range: { start_date: "", end_date: "" },
   travelers: 2,
   preferences: {
-    interests: [
-      { value: "动漫", weight: 1 },
-      { value: "美食", weight: 0.8 },
-      { value: "城市漫步", weight: 0.7 },
-    ],
-    avoid: ["购物"],
+    interests: [],
+    avoid: [],
     dietary: [],
     transport_modes: ["public_transit", "walking"],
-    accommodation_notes: "靠近地铁站",
+    accommodation_notes: "",
     pace: "balanced",
     must_visit_place_names: [],
   },
   constraints: {
-    total_budget: { amount: 1_000_000, currency: "CNY" },
+    total_budget: { amount: 500_000, currency: "CNY" },
     budget_is_hard_limit: true,
     daily_start_time: "09:00",
     daily_end_time: "21:00",
@@ -95,6 +91,9 @@ function formatMoney(amount: number): string {
 }
 
 function countTripDays(startDate: string, endDate: string): number {
+  if (!startDate || !endDate || !startDate.includes("-") || !endDate.includes("-")) {
+    return 0;
+  }
   const [startYear, startMonth, startDay] = startDate.split("-").map(Number);
   const [endYear, endMonth, endDay] = endDate.split("-").map(Number);
   const milliseconds =
@@ -110,6 +109,7 @@ export function CreateTripForm() {
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [draftStatus, setDraftStatus] = useState<string | null>(null);
+  const [agreedToTerms, setAgreedToTerms] = useState(true);
   const selectedInterests = request.preferences.interests.map(
     (item) => item.value,
   );
@@ -184,9 +184,37 @@ export function CreateTripForm() {
     }));
   }
 
+  function handleProceedToStep2() {
+    if (!request.origin.trim()) {
+      setError("请填写或选择出发地城市");
+      return;
+    }
+    if (!request.destination.trim()) {
+      setError("请填写或选择目的地城市");
+      return;
+    }
+    if (tripDays < 3 || tripDays > 7) {
+      setError(
+        `当前 MVP 阶段仅支持 3～7 天行程规划（当前选择了 ${tripDays > 0 ? `${tripDays} 天` : "未完整选择日期"}，请点击调整出行日期）`,
+      );
+      return;
+    }
+    setError(null);
+    setActiveStep(2);
+  }
+
   async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     if (activeStep !== 4) {
+      return;
+    }
+    if (tripDays < 3 || tripDays > 7) {
+      setError(`行程天数需在 3～7 天之间（当前选择 ${tripDays} 天）`);
+      setActiveStep(1);
+      return;
+    }
+    if (!agreedToTerms) {
+      setError("请先阅读并勾选同意《用户服务协议》与《隐私政策》");
       return;
     }
 
@@ -194,6 +222,13 @@ export function CreateTripForm() {
     setError(null);
     try {
       const trip = await createTrip(request);
+      try {
+        const stored = JSON.parse(window.localStorage.getItem("travelmind-recent-trips") || "[]");
+        const updated = [trip, ...stored.filter((t: any) => t.id !== trip.id)].slice(0, 20);
+        window.localStorage.setItem("travelmind-recent-trips", JSON.stringify(updated));
+      } catch {
+        // 忽略存储异常
+      }
       window.localStorage.removeItem("travelmind-trip-draft");
       router.push(`/trips/${trip.id}/planning`);
     } catch (caught) {
@@ -333,7 +368,7 @@ export function CreateTripForm() {
               </div>
               <p className={styles.inlineNote}>当前 MVP 支持 3～7 天的旅行。</p>
               <div className={styles.stepActions}>
-                <button type="button" onClick={() => setActiveStep(2)}>
+                <button type="button" onClick={handleProceedToStep2}>
                   下一步：偏好与约束
                 </button>
               </div>
@@ -448,7 +483,7 @@ export function CreateTripForm() {
                       value={request.preferences.must_visit_place_names.join(
                         "，",
                       )}
-                      placeholder="浅草寺，秋叶原"
+                      placeholder="例如想去的地标或场馆"
                       onChange={(event) =>
                         updatePreferences({
                           must_visit_place_names: parseNames(
@@ -798,9 +833,9 @@ export function CreateTripForm() {
         <aside className={styles.summary}>
           <p className={styles.summaryLabel}>旅行摘要</p>
           <h2 className={styles.summaryRoute}>
-            {request.origin}
-            <span>→</span>
-            {request.destination}
+            <span className={styles.summaryCity}>{request.origin || "出发地"}</span>
+            <span className={styles.summaryArrow}>→</span>
+            <span className={styles.summaryCity}>{request.destination || "目的地"}</span>
           </h2>
           <div className={styles.summaryMeta}>
             <div>
@@ -864,9 +899,20 @@ export function CreateTripForm() {
             />
             硬性约束会由系统自动检查
           </p>
+
+          <label style={{ display: "flex", alignItems: "flex-start", gap: "8px", margin: "14px 0 10px", fontSize: "12px", color: "#475569", cursor: "pointer", lineHeight: 1.4 }}>
+            <input
+              type="checkbox"
+              checked={agreedToTerms}
+              onChange={(e) => setAgreedToTerms(e.target.checked)}
+              style={{ marginTop: "2px", accentColor: "#123f3a", cursor: "pointer" }}
+            />
+            <span>我已阅读并同意《TravelMind 用户服务协议》与《隐私政策》</span>
+          </label>
+
           <button
             className={styles.submitButton}
-            disabled={activeStep !== 4 || submitting}
+            disabled={activeStep !== 4 || submitting || !agreedToTerms}
             type="submit"
           >
             {submitting ? "正在进入规划…" : "开始规划"}

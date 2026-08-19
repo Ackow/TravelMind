@@ -1,6 +1,5 @@
 from datetime import UTC, datetime
 
-from app.domain.common import Money
 from app.domain.itinerary import Itinerary
 from app.domain.replanning import (
     ActivityChange,
@@ -18,18 +17,10 @@ def calculate_plan_diff(
 ) -> PlanDiff:
     """计算两版行程之间的结构化变动明细与宏观统计指标 Delta。"""
     now_dt = datetime.now(UTC)
-    
+
     # 构建老版本与新版本的活动索引表
-    old_activities = {
-        act.id: (day.date, act)
-        for day in old_plan.days
-        for act in day.activities
-    }
-    new_activities = {
-        act.id: (day.date, act)
-        for day in new_plan.days
-        for act in day.activities
-    }
+    old_activities = {act.id: (day.date, act) for day in old_plan.days for act in day.activities}
+    new_activities = {act.id: (day.date, act) for day in new_plan.days for act in day.activities}
 
     added: list[ActivityChange] = []
     removed: list[ActivityChange] = []
@@ -55,9 +46,11 @@ def calculate_plan_diff(
             affected_dates_set.add(new_day)
         else:
             old_day, old_act = old_activities[act_id]
-            is_time_changed = old_act.start_at != new_act.start_at or old_act.end_at != new_act.end_at
+            is_time_changed = (
+                old_act.start_at != new_act.start_at or old_act.end_at != new_act.end_at
+            )
             is_title_changed = old_act.title != new_act.title
-            
+
             if is_time_changed or is_title_changed:
                 modified.append(
                     ActivityChange(
@@ -107,7 +100,7 @@ def calculate_plan_diff(
         delta_value=round(new_cost - old_cost, 2),
         unit=currency,
     )
-    
+
     walking_delta = MetricDelta(
         before_value=old_walking,
         after_value=new_walking,
@@ -128,13 +121,21 @@ def calculate_plan_diff(
         f"受波及天数: {len(affected_dates_set)} 天 ({unchanged_count} 项活动保持未变)。",
     ]
     if added:
-        summary_parts.append(f"新增 {len(added)} 处活动（如: {', '.join(a.place_name for a in added[:2])}）。")
+        summary_parts.append(
+            f"新增 {len(added)} 处活动（如: {', '.join(a.place_name for a in added[:2])}）。"
+        )
     if removed:
-        summary_parts.append(f"移除 {len(removed)} 处活动（如: {', '.join(a.place_name for a in removed[:2])}）。")
+        summary_parts.append(
+            f"移除 {len(removed)} 处活动（如: {', '.join(a.place_name for a in removed[:2])}）。"
+        )
     if modified:
         summary_parts.append(f"微调 {len(modified)} 处活动的时间或排期。")
     if walking_delta.delta_value != 0:
-        walk_txt = f"减少 {abs(walking_delta.delta_value):.0f} 米" if walking_delta.delta_value < 0 else f"增加 {walking_delta.delta_value:.0f} 米"
+        walk_txt = (
+            f"减少 {abs(walking_delta.delta_value):.0f} 米"
+            if walking_delta.delta_value < 0
+            else f"增加 {walking_delta.delta_value:.0f} 米"
+        )
         summary_parts.append(f"全行程步行量 {walk_txt}。")
 
     return PlanDiff(

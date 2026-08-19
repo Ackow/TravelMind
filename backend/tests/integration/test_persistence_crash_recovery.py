@@ -1,8 +1,8 @@
-from datetime import datetime, timezone
 from uuid import uuid4
+
+import pytest
 from langgraph.checkpoint.sqlite import SqliteSaver
 from langgraph.types import Command
-import pytest
 
 from app.agent.graph import create_travel_agent_graph
 from app.agent.state import PlanStatus
@@ -60,6 +60,7 @@ def test_agent_interrupt_and_resume_across_restarts(tmp_path):
 def test_agent_interrupt_and_resume_with_postgres():
     """验证：Agent 在 PostgreSQL 集中式 Checkpoint 下的跨实例挂起与唤醒恢复。"""
     from langgraph.checkpoint.postgres import PostgresSaver
+
     from app.core.config import get_settings
 
     settings = get_settings()

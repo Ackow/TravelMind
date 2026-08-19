@@ -1,8 +1,9 @@
-from datetime import date
 from dataclasses import dataclass
+from datetime import date
 
 from app.domain.itinerary import Itinerary
 from app.domain.replanning import (
+    AddBudgetOp,
     AdjustDayTimeWindowOp,
     ImpactLevel,
     LockActivityOp,
@@ -11,20 +12,20 @@ from app.domain.replanning import (
     ReplacePlaceOp,
     ReplanningOperation,
     UnlockActivityOp,
-    AddBudgetOp,
 )
 
 
 @dataclass(slots=True, frozen=True)
 class ImpactScope:
     """影响范围分析结果"""
+
     level: ImpactLevel
     affected_dates: tuple[date, ...]
     is_global: bool
     explanation: str
 
 
-def  analyze_feedback_impact(
+def analyze_feedback_impact(
     operations: list[ReplanningOperation],
     current_itinerary: Itinerary,
 ) -> ImpactScope:
@@ -89,12 +90,16 @@ def  analyze_feedback_impact(
         elif isinstance(op, ReplacePlaceOp):
             if op.day is not None:
                 affected_dates_set.add(op.day)
-                reasons.append(f"第 {op.day} 天用 [{op.replacement_place_name}] 替换 [{op.original_place_name}]")
+                reasons.append(
+                    f"第 {op.day} 天用 [{op.replacement_place_name}] 替换 [{op.original_place_name}]"
+                )
             else:
                 matched_dates = place_to_dates.get(op.original_place_name.casefold(), set())
                 if matched_dates:
                     affected_dates_set.update(matched_dates)
-                    reasons.append(f"替换地点 [{op.original_place_name}] (波及 {len(matched_dates)} 天)")
+                    reasons.append(
+                        f"替换地点 [{op.original_place_name}] (波及 {len(matched_dates)} 天)"
+                    )
 
     if is_global or len(affected_dates_set) == len(all_itinerary_dates):
         return ImpactScope(

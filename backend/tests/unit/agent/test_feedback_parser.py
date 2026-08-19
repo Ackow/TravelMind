@@ -1,4 +1,9 @@
-from app.agent.feedback_parser import FeedbackParser, ParsedFeedback, SetMaxWalkingOp, AddExcludedPlaceOp
+from app.agent.feedback_parser import (
+    AddExcludedPlaceOp,
+    FeedbackParser,
+    ParsedFeedback,
+    SetMaxWalkingOp,
+)
 from app.agent.llm_client import FakeLLMClient
 from app.fixtures.loader import load_tokyo_trip_request
 

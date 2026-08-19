@@ -1,5 +1,7 @@
 from datetime import UTC, date, datetime
+
 import httpx
+
 from app.domain.common import DataQuality, DateRange, GeoPoint, SourceRef
 from app.domain.research import OutdoorSuitability, WeatherCondition, WeatherDay
 from app.providers.base import ProviderError, ProviderTimeoutError, WeatherProvider
@@ -68,12 +70,18 @@ class AmapWeatherProvider(WeatherProvider):
                 resp.raise_for_status()
                 data = resp.json()
         except httpx.TimeoutException as exc:
-            raise ProviderTimeoutError("高德天气请求超时", provider_name="amap_weather", cause=exc) from exc
+            raise ProviderTimeoutError(
+                "高德天气请求超时", provider_name="amap_weather", cause=exc
+            ) from exc
         except Exception as exc:
-            raise ProviderError(f"高德天气请求异常: {exc}", provider_name="amap_weather", cause=exc) from exc
+            raise ProviderError(
+                f"高德天气请求异常: {exc}", provider_name="amap_weather", cause=exc
+            ) from exc
 
         if data.get("status") != "1":
-            raise ProviderError(f"高德天气 API 错误: {data.get('info')}", provider_name="amap_weather")
+            raise ProviderError(
+                f"高德天气 API 错误: {data.get('info')}", provider_name="amap_weather"
+            )
 
         forecasts = data.get("forecasts", [])
         casts = forecasts[0].get("casts", []) if forecasts else []

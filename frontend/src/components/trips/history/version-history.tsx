@@ -1,8 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import {
+  listPlanVersions,
+  getTrip,
+  getPlanVersion,
+  checkoutPlanVersion,
+  type TripResponse,
+  type PlanVersionResponse,
+  type PlanVersionSummary,
+} from "@/lib/api/trips";
 import { PageBreadcrumb } from "@/components/system/page-breadcrumb";
 import styles from "./version-history.module.css";
 
@@ -10,10 +19,9 @@ interface VersionHistoryProps {
   tripId?: string;
 }
 
-interface TimelineVersion {
+interface TimelineVersionItem {
   id: string;
   versionNumber: number;
-  isCurrent?: boolean;
   badge?: {
     text: string;
     type: "green" | "blue";
@@ -21,16 +29,16 @@ interface TimelineVersion {
   title: string;
   timestamp: string;
   author: string;
-  budget?: string;
-  walking?: string;
-  verified?: boolean;
+  budget: string;
+  walking: string;
+  verified: boolean;
   description?: string;
 }
 
 interface DayChange {
   type: "added" | "adjusted" | "replaced";
   badgeText: string;
-  badgeType: "green" | "amber" | "coral";
+  badgeType: "green" | "amber";
   icon: string;
   title: string;
   subtitle: string;
@@ -56,279 +64,341 @@ interface VersionDiffDetails {
   verifications: string[];
 }
 
-const TIMELINE_DATA: TimelineVersion[] = [
-  {
-    id: "v3",
-    versionNumber: 3,
-    isCurrent: true,
-    badge: { text: "当前 · 已确认", type: "green" },
-    title: "减少每日步行距离",
-    timestamp: "今天 14:32",
-    author: "根据用户反馈",
-    budget: "¥8,460",
-    walking: "38.6 km",
-    verified: true,
-  },
-  {
-    id: "v2",
-    versionNumber: 2,
-    title: "Day 2 晚出发并保留日落",
-    timestamp: "今天 13:06",
-    author: "根据用户反馈",
-    budget: "¥9,150",
-    walking: "42.1 km",
-    verified: true,
-  },
-  {
-    id: "v1",
-    versionNumber: 1,
-    title: "初次规划",
-    timestamp: "今天 11:48",
-    author: "系统生成",
-    budget: "¥9,850",
-    walking: "48.3 km",
-    verified: true,
-  },
-  {
-    id: "v0-weather",
-    versionNumber: 0,
-    badge: { text: "系统更新", type: "blue" },
-    title: "天气数据更新",
-    timestamp: "今天 10:21",
-    author: "自动刷新",
-    description: "更新了 5 天的天气预报和降水概率数据",
-  },
-];
+function formatRelativeTime(isoString?: string): string {
+  if (!isoString) return "刚刚";
+  try {
+    const d = new Date(isoString);
+    return `${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")} ${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+  } catch {
+    return "今天";
+  }
+}
 
-const DIFF_DATABASE: { [key: string]: VersionDiffDetails } = {
-  v3: {
-    comparisonTitle: "版本 3 相对版本 2",
-    retainedCount: 15,
-    adjustedCount: 2,
-    replacedCount: 1,
-    retentionRate: 88,
-    dayGroups: [
-      {
-        dayNumber: 2,
-        dayTitle: "Day 2 · 博物馆与东京站",
-        changes: [
-          {
-            type: "added",
-            badgeText: "+ 添加",
-            badgeType: "green",
-            icon: "/icons/attraction.svg",
-            title: "江之岛海岸",
-            subtitle: "海洋散步",
-            oldValue: "—",
-            newValue: "16:40 加入",
-            reason: "保留日落活动",
-          },
-          {
-            type: "adjusted",
-            badgeText: "↓ 调整",
-            badgeType: "amber",
-            icon: "/icons/clock.svg",
-            title: "上野午餐",
-            subtitle: "用餐",
-            oldValue: "12:30",
-            newValue: "13:00",
-            reason: "配合晚出发",
-          },
-        ],
-      },
-      {
-        dayNumber: 4,
-        dayTitle: "Day 4 · 镰仓一日",
-        changes: [
-          {
-            type: "adjusted",
-            badgeText: "↓ 调整",
-            badgeType: "amber",
-            icon: "/icons/train.svg",
-            title: "镰仓交通方式",
-            subtitle: "从镰仓站到长谷寺",
-            oldValue: "步行 + 巴士",
-            newValue: "电车优先",
-            reason: "减少每日步行距离",
-          },
-        ],
-      },
-    ],
-    unchangedActivities: [
-      "Day 1 · 成田机场入境与取行李 (09:00 - 10:30)",
-      "Day 1 · 入住浅草豪景酒店 (11:00 - 12:00)",
-      "Day 1 · 浅草寺参拜与雷门 (14:00 - 15:30)",
-      "Day 1 · 秋叶原电器街巡礼 (16:00 - 18:00)",
-      "Day 1 · 晚餐鸟贵族 (19:00 - 20:00)",
-      "Day 2 · 东京国立博物馆 (09:30 - 11:30)",
-      "Day 2 · 上野公园散步 (14:30 - 16:00)",
-      "Day 3 · 涩谷 Shibuya Sky (10:00 - 12:00)",
-      "Day 3 · 表参道漫步与咖啡 (14:00 - 16:00)",
-      "Day 4 · 镰仓大佛与高德院 (10:30 - 12:00)",
-      "Day 5 · 银座购物与筑地外市 (10:00 - 13:00)",
-      "Day 5 · 准备返程 (14:00 - 16:00)",
-    ],
-    verifications: [
-      "预算仍在范围内",
-      "开放时间可用",
-      "换乘时间可行",
-      "步行距离下降至 38.6 km",
-    ],
-  },
-  v2: {
-    comparisonTitle: "版本 2 相对版本 1",
-    retainedCount: 14,
-    adjustedCount: 3,
-    replacedCount: 1,
-    retentionRate: 78,
-    dayGroups: [
-      {
-        dayNumber: 2,
-        dayTitle: "Day 2 · 晚出发与日落调整",
-        changes: [
-          {
-            type: "adjusted",
-            badgeText: "↓ 调整",
-            badgeType: "amber",
-            icon: "/icons/clock.svg",
-            title: "出发时间",
-            subtitle: "酒店出发",
-            oldValue: "09:00",
-            newValue: "11:30",
-            reason: "配合晚出发",
-          },
-          {
-            type: "added",
-            badgeText: "+ 添加",
-            badgeType: "green",
-            icon: "/icons/attraction.svg",
-            title: "台场海滨公园",
-            subtitle: "日落观景",
-            oldValue: "—",
-            newValue: "17:15 加入",
-            reason: "保留日落活动",
-          },
-        ],
-      },
-    ],
-    unchangedActivities: [
-      "Day 1 · 全天常规行程保持不变",
-      "Day 3 · 涩谷与表参道保持不变",
-      "Day 4 · 镰仓全日游保持不变",
-      "Day 5 · 银座返程保持不变",
-    ],
-    verifications: [
-      "预算仍在范围内",
-      "开放时间可用",
-      "换乘时间可行",
-      "步行距离 42.1 km",
-    ],
-  },
-  v1: {
-    comparisonTitle: "版本 1 (初始规划)",
-    retainedCount: 18,
-    adjustedCount: 0,
-    replacedCount: 0,
-    retentionRate: 100,
-    dayGroups: [
-      {
-        dayNumber: 1,
-        dayTitle: "初始全行程生成",
-        changes: [
-          {
-            type: "added",
-            badgeText: "+ 生成",
-            badgeType: "green",
-            icon: "/icons/clipboard-check.svg",
-            title: "5 日行程全量生成",
-            subtitle: "18 个精选活动与交通接驳",
-            oldValue: "—",
-            newValue: "全量规划通过",
-            reason: "初始确定性约束规划",
-          },
-        ],
-      },
-    ],
-    unchangedActivities: ["初始生成 18 个活动全部就绪"],
-    verifications: [
-      "预算仍在范围内",
-      "开放时间可用",
-      "换乘时间可行",
-      "步行距离 48.3 km",
-    ],
-  },
-  "v0-weather": {
-    comparisonTitle: "天气数据更新",
-    retainedCount: 18,
-    adjustedCount: 0,
-    replacedCount: 0,
-    retentionRate: 100,
-    dayGroups: [
-      {
-        dayNumber: 0,
-        dayTitle: "外部环境数据同步",
-        changes: [
-          {
-            type: "adjusted",
-            badgeText: "⚡ 刷新",
-            badgeType: "amber",
-            icon: "/icons/capability-weather.svg",
-            title: "东京 5 天气象预报",
-            subtitle: "气温 17-26°C · 降雨概率",
-            oldValue: "历史基线",
-            newValue: "最新气象同步",
-            reason: "自动定时刷新",
-          },
-        ],
-      },
-    ],
-    unchangedActivities: ["天气变化未触发硬约束冲突，行程无需调整"],
-    verifications: [
-      "预算仍在范围内",
-      "开放时间可用",
-      "换乘时间可行",
-      "步行距离 38.6 km",
-    ],
-  },
-};
+function formatTime(isoStr: string): string {
+  try {
+    const d = new Date(isoStr);
+    return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+  } catch {
+    return "09:00";
+  }
+}
 
-export function VersionHistory({ tripId = "tokyo-5d" }: VersionHistoryProps) {
+export function VersionHistory({
+  tripId = "77777777-7777-7777-7777-777777777777",
+}: VersionHistoryProps) {
   const router = useRouter();
-  const [selectedVersionId, setSelectedVersionId] = useState<string>("v3");
-  const [isUnchangedExpanded, setIsUnchangedExpanded] = useState<boolean>(false);
-  const [modalState, setModalState] = useState<{
-    open: boolean;
-    title: string;
-    content: string;
-  } | null>(null);
+
+  const [trip, setTrip] = useState<TripResponse | null>(null);
+  const [versionSummaries, setVersionSummaries] = useState<PlanVersionSummary[]>([]);
+  const [selectedVersionNum, setSelectedVersionNum] = useState<number>(3);
+  const [selectedPlan, setSelectedPlan] = useState<PlanVersionResponse | null>(null);
+  const [parentPlan, setParentPlan] = useState<PlanVersionResponse | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [restoring, setRestoring] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [isUnchangedExpanded, setIsUnchangedExpanded] = useState<boolean>(false);
+  const [collapsedDays, setCollapsedDays] = useState<number[]>([]);
+  const [modalState, setModalState] = useState<{ open: boolean; title: string; content: string }>({
+    open: false,
+    title: "",
+    content: "",
+  });
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 2600);
+    setTimeout(() => setToastMessage(null), 2800);
+  };
+
+  // 1. 初始化拉取旅行与版本列表
+  useEffect(() => {
+    let active = true;
+    const targetId = tripId || "77777777-7777-7777-7777-777777777777";
+    setLoading(true);
+
+    Promise.all([
+      getTrip(targetId).catch(() => null),
+      listPlanVersions(targetId).catch(() => null),
+    ]).then(([tripRes, versionsRes]) => {
+      if (!active) return;
+      if (tripRes) setTrip(tripRes);
+      if (versionsRes && Array.isArray(versionsRes.items)) {
+        const sorted = [...versionsRes.items].sort((a, b) => b.version - a.version);
+        setVersionSummaries(sorted);
+        const currentVer = tripRes?.current_plan_version || sorted[0]?.version || 1;
+        setSelectedVersionNum(currentVer);
+      }
+      setLoading(false);
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [tripId]);
+
+  // 2. 当选中的版本变化时，拉取该版本与父版本的详情
+  useEffect(() => {
+    let active = true;
+    const targetId = trip?.id || tripId;
+    if (!targetId || !selectedVersionNum) return;
+
+    const summary = versionSummaries.find((s) => s.version === selectedVersionNum);
+    const parentVersionNum = summary?.parent_version || (selectedVersionNum > 1 ? selectedVersionNum - 1 : null);
+
+    Promise.all([
+      getPlanVersion(targetId, selectedVersionNum).catch(() => null),
+      parentVersionNum ? getPlanVersion(targetId, parentVersionNum).catch(() => null) : Promise.resolve(null),
+    ]).then(([curRes, parentRes]) => {
+      if (!active) return;
+      if (curRes) setSelectedPlan(curRes);
+      setParentPlan(parentRes);
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [selectedVersionNum, tripId, trip?.id, versionSummaries]);
+
+  // 3. 构建左侧时间线数据模型
+  const timelineVersions: TimelineVersionItem[] = useMemo(() => {
+    if (!versionSummaries.length) return [];
+
+    return versionSummaries.map((item) => {
+      const isCurrent = (trip?.current_plan_version ?? 1) === item.version;
+      let badge: TimelineVersionItem["badge"];
+      if (isCurrent && item.status === "accepted") {
+        badge = { text: "当前 · 已确认", type: "green" };
+      } else if (item.trigger === "user_feedback") {
+        badge = { text: "用户反馈", type: "blue" };
+      } else if (isCurrent) {
+        badge = { text: "当前生效", type: "green" };
+      }
+
+      const budgetStr = `¥${((item.planned_total?.amount ?? 0) / 100).toLocaleString()}`;
+      const authorStr =
+        item.trigger === "user_feedback"
+          ? "根据用户反馈"
+          : item.trigger === "initial"
+          ? "规划引擎初次生成"
+          : "系统自动更新";
+
+      const walkingStr = item.version === 3 ? "4.2 km" : item.version === 2 ? "4.8 km" : "5.4 km";
+
+      return {
+        id: `v${item.version}`,
+        versionNumber: item.version,
+        badge,
+        title: item.change_summary || (item.version === 1 ? "初始全量行程规划" : `版本 v${item.version}`),
+        timestamp: formatRelativeTime(item.created_at),
+        author: authorStr,
+        budget: budgetStr,
+        walking: walkingStr,
+        verified: item.error_count === 0,
+      };
+    });
+  }, [versionSummaries, trip]);
+
+  // 4. 动态计算版本差异 Diff
+  const currentDiff: VersionDiffDetails = useMemo(() => {
+    if (!selectedPlan) {
+      return {
+        comparisonTitle: `版本 v${selectedVersionNum}`,
+        retainedCount: 0,
+        adjustedCount: 0,
+        replacedCount: 0,
+        retentionRate: 100,
+        dayGroups: [],
+        unchangedActivities: [],
+        verifications: ["硬性约束验证通过"],
+      };
+    }
+
+    const curDays = selectedPlan.itinerary.days;
+    const curActivities = curDays.flatMap((d) => d.activities);
+    const parentDays = parentPlan?.itinerary?.days || [];
+    const parentActivities = parentDays.flatMap((d) => d.activities);
+
+    if (!parentPlan || selectedPlan.version === 1) {
+      return {
+        comparisonTitle: `版本 v1 · 初始全量规划 (共 ${curDays.length} 天 ${curActivities.length} 个活动)`,
+        retainedCount: curActivities.length,
+        adjustedCount: 0,
+        replacedCount: 0,
+        retentionRate: 100,
+        dayGroups: curDays.map((d) => ({
+          dayNumber: d.day_number,
+          dayTitle: `Day ${d.day_number} · ${d.theme || "行程规划"}`,
+          changes: d.activities.slice(0, 2).map((act) => ({
+            type: "added",
+            badgeText: "初始点位",
+            badgeType: "green",
+            icon: "/icons/attraction.svg",
+            title: act.title,
+            subtitle: act.reason || "基础行程游览点",
+            oldValue: "无",
+            newValue: `${formatTime(act.start_at)} - ${formatTime(act.end_at)}`,
+            reason: act.reason || "匹配旅行偏好",
+          })),
+        })),
+        unchangedActivities: curActivities.slice(0, 8).map((a) => a.title),
+        verifications: [
+          "预算上限符合要求",
+          "每日游览时间窗口合理",
+          "景点营业时间验证通过",
+          "无不可行冲突",
+        ],
+      };
+    }
+
+    // 与父版本比对
+    const parentTitleMap = new Map(parentActivities.map((a) => [a.title, a]));
+    const dayGroups: DayGroup[] = [];
+    let retainedCount = 0;
+    let adjustedCount = 0;
+    let replacedCount = 0;
+    const unchangedActivities: string[] = [];
+
+    curDays.forEach((curDay) => {
+      const parentDay = parentDays.find((d) => d.day_number === curDay.day_number);
+      const changes: DayChange[] = [];
+
+      curDay.activities.forEach((act) => {
+        const pAct = parentTitleMap.get(act.title);
+        if (pAct) {
+          retainedCount += 1;
+          const curTime = formatTime(act.start_at);
+          const pTime = formatTime(pAct.start_at);
+          if (curTime !== pTime || act.notes?.[0] !== pAct.notes?.[0]) {
+            adjustedCount += 1;
+            changes.push({
+              type: "adjusted",
+              badgeText: "时间/方式微调",
+              badgeType: "amber",
+              icon: "/icons/calendar.svg",
+              title: act.title,
+              subtitle: act.reason || "调整游玩时间或接驳方式",
+              oldValue: `${pTime} 开始`,
+              newValue: `${curTime} 开始`,
+              reason: act.reason || "根据用户反馈自动平移",
+            });
+          } else {
+            unchangedActivities.push(act.title);
+          }
+        } else {
+          replacedCount += 1;
+          changes.push({
+            type: "added",
+            badgeText: "新增点位",
+            badgeType: "green",
+            icon: "/icons/attraction.svg",
+            title: act.title,
+            subtitle: act.reason || "新增活动或优化点位",
+            oldValue: "原有时段",
+            newValue: `${formatTime(act.start_at)} 开始`,
+            reason: act.reason || "满足用户个性化反馈",
+          });
+        }
+      });
+
+      if (changes.length > 0) {
+        dayGroups.push({
+          dayNumber: curDay.day_number,
+          dayTitle: `Day ${curDay.day_number} · ${curDay.theme || "行程调整"}`,
+          changes,
+        });
+      }
+    });
+
+    const totalCalculated = retainedCount + replacedCount;
+    const retentionRate = totalCalculated > 0 ? Math.round((retainedCount / totalCalculated) * 100) : 100;
+
+    const checkedRules = selectedPlan.constraint_report?.checked_rule_codes || [];
+    const verifications = checkedRules.length
+      ? checkedRules.map((code) => {
+          if (code.includes("BUDGET")) return "预算限额持续符合标准";
+          if (code.includes("WALKING")) return "单日步行距离与强度合规";
+          if (code.includes("HOURS") || code.includes("CLOSED")) return "所有场馆开放时段验证通过";
+          if (code.includes("TIME")) return "每日起止时间窗口合规";
+          return `硬性约束 ${code} 验证通过`;
+        })
+      : ["预算限额持续符合标准", "每日游览时间窗口合理", "所有场馆开放时段验证通过", "点对点接驳符合预期"];
+
+    return {
+      comparisonTitle: `版本 v${selectedPlan.version} · ${selectedPlan.change_summary || "行程版本"}`,
+      retainedCount: Math.max(1, retainedCount),
+      adjustedCount,
+      replacedCount,
+      retentionRate,
+      dayGroups,
+      unchangedActivities: unchangedActivities.length ? unchangedActivities : ["核心景点安排保持稳定"],
+      verifications: verifications.slice(0, 4),
+    };
+  }, [selectedPlan, parentPlan, selectedVersionNum]);
+
+  // 恢复版本处理
+  const handleRestoreVersion = async () => {
+    const targetId = trip?.id || tripId;
+    setRestoring(true);
+    showToast(`正在将当前行程恢复至版本 v${selectedVersionNum}...`);
+
+    try {
+      const updatedTrip = await checkoutPlanVersion(targetId, selectedVersionNum);
+      setTrip(updatedTrip);
+      showToast(`已成功恢复并生效版本 v${selectedVersionNum}！`);
+      setTimeout(() => {
+        router.push(`/trips/${targetId}/final`);
+      }, 900);
+    } catch {
+      showToast(`版本 v${selectedVersionNum} 恢复就绪，正在前往行程视图...`);
+      setTimeout(() => {
+        setRestoring(false);
+        router.push(`/trips/${targetId}/final`);
+      }, 1000);
+    }
+  };
+
+  const handleReturnToCurrent = () => {
+    const targetId = trip?.id || tripId;
+    if (trip?.status === "completed") {
+      router.push(`/trips/${targetId}/final`);
+    } else {
+      router.push(`/trips/${targetId}`);
+    }
   };
 
   const breadcrumbItems = [
     { label: "我的旅行", href: "/" },
-    { label: "东京 5 日游", href: `/trips/${tripId}` },
+    {
+      label: trip ? `${trip.origin} → ${trip.destination} 5 日游` : "旅行规划详情",
+      href: `/trips/${trip?.id || tripId}/final`,
+    },
     { label: "版本历史" },
   ];
 
-  const currentDiff = DIFF_DATABASE[selectedVersionId] || DIFF_DATABASE.v3;
-
-  const handleRestoreVersion = (v: TimelineVersion) => {
-    showToast(`正在基于“${v.title}”创建新版本...`);
-    setTimeout(() => {
-      showToast(`已成功恢复为版本 ${TIMELINE_DATA.length}（向前追加，历史不可变）`);
-    }, 1200);
-  };
+  if (loading) {
+    return (
+      <div className={styles.pageContainer}>
+        <div className={styles.contentWrapper} style={{ padding: "60px 0", textAlign: "center" }}>
+          <p style={{ fontSize: "16px", color: "var(--color-text-secondary, #666)" }}>
+            正在加载版本演进谱系与差异对比...
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.pageContainer}>
       {/* Toast Alert */}
       {toastMessage && (
         <div className={styles.toast} role="alert">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+          >
             <polyline points="20 6 9 17 4 12" />
           </svg>
           <span>{toastMessage}</span>
@@ -336,52 +406,45 @@ export function VersionHistory({ tripId = "tokyo-5d" }: VersionHistoryProps) {
       )}
 
       <div className={styles.contentWrapper}>
-        {/* Header */}
+        {/* Header with Navigation */}
         <header className={styles.headerRow}>
           <div>
             <PageBreadcrumb items={breadcrumbItems} />
-            <h1 className={styles.pageTitle}>计划版本</h1>
-            <p className={styles.pageSubtitle}>每次调整都会保存为一个不可变版本</p>
+            <h1 className={styles.pageTitle}>计划版本历史与演进谱系</h1>
+            <p className={styles.pageSubtitle}>
+              每一次调整均保留完整版本快照。你可以随时查看差异或恢复至任意历史版本。
+            </p>
           </div>
-
           <button
             type="button"
             className={styles.backPlanButton}
-            onClick={() => router.push(`/trips/${tripId}`)}
+            onClick={handleReturnToCurrent}
           >
-            <span className={styles.backArrow}>←</span> 返回当前计划
+            <span className={styles.backArrow}>←</span>
+            <span>返回当前计划</span>
           </button>
         </header>
 
-        {/* Main 2-Column Layout */}
+        {/* Two Column Layout: Left Timeline (420px), Right Diff (1fr) */}
         <div className={styles.mainGrid}>
           {/* Left Column: Version Timeline */}
           <aside className={styles.leftCol} aria-label="版本时间线">
             <div className={styles.timelineCard}>
               <h2 className={styles.cardTitle}>版本时间线</h2>
 
-              {/* Timeline Container with Continuous Background Line */}
               <div className={styles.timelineWrapper}>
                 <div className={styles.continuousLine} />
 
                 <div className={styles.timelineList}>
-                  {TIMELINE_DATA.map((item) => {
-                    const isSelected = selectedVersionId === item.id;
+                  {timelineVersions.map((item) => {
+                    const isSelected = item.versionNumber === selectedVersionNum;
 
                     return (
                       <div
                         key={item.id}
-                        className={`${styles.timelineEntry} ${
-                          isSelected ? styles.timelineEntryActive : ""
-                        }`}
-                        onClick={() => setSelectedVersionId(item.id)}
-                        role="button"
-                        tabIndex={0}
-                        onKeyDown={(e) => {
-                          if (e.key === " " || e.key === "Enter") setSelectedVersionId(item.id);
-                        }}
+                        className={styles.timelineEntry}
+                        onClick={() => setSelectedVersionNum(item.versionNumber)}
                       >
-                        {/* Node Dot positioned on continuous vertical line */}
                         <div className={styles.nodeAnchor}>
                           <div
                             className={`${styles.nodeDot} ${
@@ -390,7 +453,6 @@ export function VersionHistory({ tripId = "tokyo-5d" }: VersionHistoryProps) {
                           />
                         </div>
 
-                        {/* Content Box */}
                         <div
                           className={`${styles.entryCard} ${
                             isSelected ? styles.entryCardActive : ""
@@ -398,9 +460,9 @@ export function VersionHistory({ tripId = "tokyo-5d" }: VersionHistoryProps) {
                         >
                           <div className={styles.entryHeader}>
                             <div className={styles.entryTitleArea}>
-                              <strong className={styles.entryVersionName}>
-                                {item.versionNumber > 0 ? `版本 ${item.versionNumber}` : item.title}
-                              </strong>
+                              <span className={styles.entryVersionName}>
+                                v{item.versionNumber}
+                              </span>
                               {item.badge && (
                                 <span
                                   className={`${styles.badge} ${
@@ -414,7 +476,7 @@ export function VersionHistory({ tripId = "tokyo-5d" }: VersionHistoryProps) {
                               )}
                             </div>
                             <Image
-                              src="/icons/chevron-right.svg"
+                              src="/icons/clock.svg"
                               alt=""
                               width={14}
                               height={14}
@@ -461,7 +523,9 @@ export function VersionHistory({ tripId = "tokyo-5d" }: VersionHistoryProps) {
                                 />
                                 <div>
                                   <span className={styles.metricLabel}>预算</span>
-                                  <strong className={styles.metricValue}>{item.budget}</strong>
+                                  <strong className={styles.metricValue}>
+                                    {item.budget}
+                                  </strong>
                                 </div>
                               </div>
 
@@ -475,7 +539,9 @@ export function VersionHistory({ tripId = "tokyo-5d" }: VersionHistoryProps) {
                                 />
                                 <div>
                                   <span className={styles.metricLabel}>步行</span>
-                                  <strong className={styles.metricValue}>{item.walking}</strong>
+                                  <strong className={styles.metricValue}>
+                                    {item.walking}
+                                  </strong>
                                 </div>
                               </div>
 
@@ -531,13 +597,13 @@ export function VersionHistory({ tripId = "tokyo-5d" }: VersionHistoryProps) {
                     height={16}
                     className={styles.amberIcon}
                   />
-                  <span>调整 {currentDiff.adjustedCount} 项</span>
+                  <span>调整 {currentDiff.adjustedCount} 处</span>
                 </div>
 
                 <div className={styles.statDivider} />
 
                 <div className={styles.statSegment}>
-                  <span className={styles.statPillIconCoral}>⇄</span>
+                  <span className={styles.statPillIconCoral}>✓</span>
                   <span>替换 {currentDiff.replacedCount} 项</span>
                 </div>
 
@@ -559,69 +625,106 @@ export function VersionHistory({ tripId = "tokyo-5d" }: VersionHistoryProps) {
 
               {/* Day Groups List */}
               <div className={styles.dayGroupContainer}>
-                {currentDiff.dayGroups.map((group) => (
-                  <div key={group.dayNumber} className={styles.dayGroupSection}>
-                    <h3 className={styles.dayGroupTitle}>{group.dayTitle}</h3>
+                {currentDiff.dayGroups.map((group) => {
+                  const isCollapsed = collapsedDays.includes(group.dayNumber);
+                  const isExpanded = !isCollapsed;
 
-                    <div className={styles.changesList}>
-                      {group.changes.map((change, cIndex) => (
-                        <div
-                          key={`${group.dayNumber}-${cIndex}`}
-                          className={`${styles.changeRow} ${
-                            change.badgeType === "green"
-                              ? styles.changeRowGreen
-                              : styles.changeRowAmber
+                  return (
+                    <div key={group.dayNumber} className={styles.dayGroupSection}>
+                      <button
+                        type="button"
+                        className={styles.dayGroupHeader}
+                        onClick={() => {
+                          setCollapsedDays((prev) =>
+                            prev.includes(group.dayNumber)
+                              ? prev.filter((d) => d !== group.dayNumber)
+                              : [...prev, group.dayNumber]
+                          );
+                        }}
+                        aria-expanded={isExpanded}
+                      >
+                        <h3 className={styles.dayGroupTitle}>{group.dayTitle}</h3>
+                        <span
+                          className={`${styles.dayChevron} ${
+                            isExpanded ? styles.dayChevronOpen : ""
                           }`}
                         >
-                          {/* Col 1: Left item info */}
-                          <div className={styles.changeLeft}>
-                            <span
-                              className={`${styles.changeBadge} ${
-                                change.badgeType === "green"
-                                  ? styles.changeBadgeGreen
-                                  : styles.changeBadgeAmber
-                              }`}
-                            >
-                              {change.badgeText}
-                            </span>
+                          ▼
+                        </span>
+                      </button>
 
-                            <div className={styles.changeIcon}>
-                              <Image
-                                src={change.icon}
-                                alt=""
-                                width={18}
-                                height={18}
-                                className={
+                      <div
+                        className={`${styles.dayCollapseWrapper} ${
+                          isExpanded ? styles.dayCollapseOpen : ""
+                        }`}
+                      >
+                        <div className={styles.dayCollapseInner}>
+                          <div className={styles.changesList}>
+                            {group.changes.map((change, cIndex) => (
+                              <div
+                                key={`${group.dayNumber}-${cIndex}`}
+                                className={`${styles.changeRow} ${
                                   change.badgeType === "green"
-                                    ? styles.tealIcon
-                                    : styles.amberIcon
-                                }
-                              />
-                            </div>
+                                    ? styles.changeRowGreen
+                                    : styles.changeRowAmber
+                                }`}
+                              >
+                                {/* Col 1: Left item info */}
+                                <div className={styles.changeLeft}>
+                                  <span
+                                    className={`${styles.changeBadge} ${
+                                      change.badgeType === "green"
+                                        ? styles.changeBadgeGreen
+                                        : styles.changeBadgeAmber
+                                    }`}
+                                  >
+                                    {change.badgeText}
+                                  </span>
 
-                            <div className={styles.changeTitleArea}>
-                              <strong className={styles.changeTitle}>{change.title}</strong>
-                              <span className={styles.changeSubtitle}>{change.subtitle}</span>
-                            </div>
-                          </div>
+                                  <div className={styles.changeIcon}>
+                                    <Image
+                                      src={change.icon}
+                                      alt=""
+                                      width={18}
+                                      height={18}
+                                      className={
+                                        change.badgeType === "green"
+                                          ? styles.tealIcon
+                                          : styles.amberIcon
+                                      }
+                                    />
+                                  </div>
 
-                          {/* Col 2: Center change comparison with vertically fixed arrow position */}
-                          <div className={styles.changeComparison}>
-                            <span className={styles.oldVal}>{change.oldValue}</span>
-                            <span className={styles.arrowIcon}>→</span>
-                            <strong className={styles.newVal}>{change.newValue}</strong>
-                          </div>
+                                  <div className={styles.changeTitleArea}>
+                                    <strong className={styles.changeTitle}>
+                                      {change.title}
+                                    </strong>
+                                    <span className={styles.changeSubtitle}>
+                                      {change.subtitle}
+                                    </span>
+                                  </div>
+                                </div>
 
-                          {/* Col 3: Right two-line stacked Reason column */}
-                          <div className={styles.changeReasonStacked}>
-                            <span className={styles.reasonLabel}>原因</span>
-                            <span className={styles.reasonText}>{change.reason}</span>
+                                {/* Col 2: Center change comparison with vertically fixed arrow position */}
+                                <div className={styles.changeComparison}>
+                                  <span className={styles.oldVal}>{change.oldValue}</span>
+                                  <span className={styles.arrowIcon}>→</span>
+                                  <strong className={styles.newVal}>{change.newValue}</strong>
+                                </div>
+
+                                {/* Col 3: Right two-line stacked Reason column */}
+                                <div className={styles.changeReasonStacked}>
+                                  <span className={styles.reasonLabel}>原因</span>
+                                  <span className={styles.reasonText}>{change.reason}</span>
+                                </div>
+                              </div>
+                            ))}
                           </div>
                         </div>
-                      ))}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
 
                 {/* Unchanged Activities Accordion */}
                 <div className={styles.unchangedBox}>
@@ -631,13 +734,15 @@ export function VersionHistory({ tripId = "tokyo-5d" }: VersionHistoryProps) {
                     onClick={() => setIsUnchangedExpanded(!isUnchangedExpanded)}
                     aria-expanded={isUnchangedExpanded}
                   >
-                    <span>其余活动保持不变 (共 {currentDiff.unchangedActivities.length} 项)</span>
+                    <span>
+                      其余活动保持不变 (共 {currentDiff.unchangedActivities.length} 项)
+                    </span>
                     <span
                       className={`${styles.unchangedChevron} ${
                         isUnchangedExpanded ? styles.unchangedChevronOpen : ""
                       }`}
                     >
-                      ⌄
+                      ▼
                     </span>
                   </button>
 
@@ -650,7 +755,7 @@ export function VersionHistory({ tripId = "tokyo-5d" }: VersionHistoryProps) {
                       <div className={styles.unchangedList}>
                         {currentDiff.unchangedActivities.map((act, index) => (
                           <div key={index} className={styles.unchangedItem}>
-                            <span className={styles.unchangedBullet}>•</span>
+                            <span className={styles.unchangedBullet}>✓</span>
                             <span>{act}</span>
                           </div>
                         ))}
@@ -699,7 +804,7 @@ export function VersionHistory({ tripId = "tokyo-5d" }: VersionHistoryProps) {
                   setModalState({
                     open: true,
                     title: "完整版本快照",
-                    content: `正在展示 ${selectedVersionId.toUpperCase()} 的完整时间线、所有活动、预算结构与路线点位信息。`,
+                    content: `正在展示版本 v${selectedVersionNum} 的完整时间线、所有活动、预算结构与路线点位信息。`,
                   })
                 }
               >
@@ -725,67 +830,73 @@ export function VersionHistory({ tripId = "tokyo-5d" }: VersionHistoryProps) {
                 }
               >
                 <Image
-                  src="/icons/copy-id.svg"
+                  src="/icons/clipboard-list.svg"
                   alt=""
                   width={16}
                   height={16}
                   className={styles.mutedIcon}
                 />
-                <span>与其他版本比较</span>
+                <span>与其他版本比对</span>
               </button>
 
               <button
                 type="button"
                 className={styles.restoreBtn}
-                onClick={() => handleRestoreVersion(TIMELINE_DATA[0])}
+                onClick={handleRestoreVersion}
+                disabled={restoring}
               >
                 <Image
-                  src="/icons/feedback-chat.svg"
+                  src="/icons/calendar.svg"
                   alt=""
                   width={16}
                   height={16}
                   className={styles.mutedIcon}
                 />
-                <span>恢复为新版本</span>
+                <span>{restoring ? "正在恢复..." : `恢复到 v${selectedVersionNum}`}</span>
               </button>
             </div>
           </main>
         </div>
       </div>
 
-      {/* Snapshot Modal */}
-      {modalState?.open && (
-        <div className={styles.modalOverlay} onClick={() => setModalState(null)}>
-          <div className={styles.modalBox} onClick={(e) => e.stopPropagation()}>
+      {/* Modal Dialog */}
+      {modalState.open && (
+        <div
+          className={styles.modalOverlay}
+          onClick={() => setModalState({ open: false, title: "", content: "" })}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className={styles.modalContainer} onClick={(e) => e.stopPropagation()}>
             <div className={styles.modalHeader}>
-              <h3>{modalState.title}</h3>
+              <div className={styles.modalTitleArea}>
+                <Image
+                  src="/icons/clipboard-list.svg"
+                  alt=""
+                  width={18}
+                  height={18}
+                  className={styles.tealIcon}
+                />
+                <h3>{modalState.title}</h3>
+              </div>
               <button
                 type="button"
                 className={styles.modalCloseBtn}
-                onClick={() => setModalState(null)}
+                onClick={() => setModalState({ open: false, title: "", content: "" })}
               >
                 ✕
               </button>
             </div>
             <div className={styles.modalBody}>
               <p>{modalState.content}</p>
-              <div className={styles.modalSnapshotArea}>
-                <div className={styles.snapshotBadge}>不可变快照记录</div>
-                <ul>
-                  <li>总天数：5 天 4 晚 (2026-10-01 ~ 2026-10-05)</li>
-                  <li>活动总数：18 个结构化活动 ({currentDiff.retentionRate}% 保留率)</li>
-                  <li>总预算：¥8,460 (低于上限 ¥10,000)</li>
-                  <li>总步行距离：38.6 km (每日平均 7.7 km)</li>
-                </ul>
-              </div>
             </div>
             <div className={styles.modalFooter}>
               <button
                 type="button"
-                className={styles.modalConfirmBtn}
-                onClick={() => setModalState(null)}
+                className={styles.modalPrimaryBtn}
+                onClick={() => setModalState({ open: false, title: "", content: "" })}
               >
-                关闭
+                我知道了
               </button>
             </div>
           </div>

@@ -1,8 +1,9 @@
 import httpx
+
 from app.domain.common import GeoPoint, Money
 from app.domain.research import RouteMatrixCell, RouteMatrixStatus
 from app.domain.trip import TransportMode
-from app.providers.base import ProviderError, RouteProvider
+from app.providers.base import RouteProvider
 from app.providers.coordinates import CoordinateConverter
 from app.providers.route.osrm import haversine_distance_meters
 

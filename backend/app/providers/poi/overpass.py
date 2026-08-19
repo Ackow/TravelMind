@@ -1,5 +1,7 @@
 from datetime import UTC, datetime
+
 import httpx
+
 from app.domain.common import DataQuality, GeoPoint, SourceRef
 from app.domain.research import IndoorOutdoor, OpeningPeriod, Place, PlaceCategory
 from app.providers.base import PoiProvider, ProviderError, ProviderTimeoutError
@@ -109,9 +111,7 @@ out body {limit};
 
             cats = self._map_category(tags)
             is_indoor = (
-                IndoorOutdoor.INDOOR
-                if PlaceCategory.MUSEUM in cats
-                else IndoorOutdoor.OUTDOOR
+                IndoorOutdoor.INDOOR if PlaceCategory.MUSEUM in cats else IndoorOutdoor.OUTDOOR
             )
 
             # 构造每日 09:00 - 18:00 标准营业时间（若未显式标注）

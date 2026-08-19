@@ -41,6 +41,16 @@ class InMemoryTravelRepository:
             value = self._trips.get(trip_id)
             return None if value is None else self._copy(value)
 
+    # 获取旅行记录列表
+    def list_trips(self, limit: int = 50) -> list[TripRecord]:
+        with self._lock:
+            trips = sorted(
+                self._trips.values(),
+                key=lambda t: t.updated_at,
+                reverse=True,
+            )
+            return [self._copy(t) for t in trips[:limit]]
+
     # 保存/更新旅行记录
     def save_trip(self, trip: TripRecord) -> None:
         with self._lock:

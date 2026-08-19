@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     QWEATHER_HOST: str | None = None
     # 数据库持久化配置
     DATABASE_URL: str = "sqlite:///./travelmind.db"
+    TEST_DATABASE_URL: str = "postgresql+psycopg://travelmind:travelmind_password@localhost:5432/travelmind_test_db"
     DATABASE_ECHO: bool = False
     USE_SQL_REPOSITORY: bool = False
     AGENT_CHECKPOINT_DB_PATH: str = "agent_checkpoints.db"
@@ -24,6 +25,11 @@ class Settings(BaseSettings):
     LLM_API_KEY: str | None = None
     LLM_BASE_URL: str | None = None
     LLM_MODEL: str = "gpt-4o"
+
+    # MCP工具网格配置
+    USE_MCP_TOOLS: bool = False
+    MCP_SERVER_COMMAND: str = "python"
+    MCP_SERVER_ARGS: str = "-m mcp_server.server"
 
     model_config = SettingsConfigDict(
         env_file=(".env", "backend/.env"),

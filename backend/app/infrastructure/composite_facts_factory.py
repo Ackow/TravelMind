@@ -1,4 +1,5 @@
 from datetime import datetime
+
 from app.application.facts import FactsFactory
 from app.core.config import get_settings
 from app.domain.common import DataQuality, GeoPoint, SourceRef
@@ -38,7 +39,9 @@ class CompositeFactsFactory(FactsFactory):
         """粗略地理围栏：经度 73°E~135°E, 纬度 18°N~53.5°N"""
         return 73.0 <= location.longitude <= 135.0 and 18.0 <= location.latitude <= 53.5
 
-    def _resolve_providers(self, location: GeoPoint) -> tuple[WeatherProvider, PoiProvider, RouteProvider]:
+    def _resolve_providers(
+        self, location: GeoPoint
+    ) -> tuple[WeatherProvider, PoiProvider, RouteProvider]:
         """根据坐标地理围栏与 API Key 自动路由最佳数据源。"""
         is_china = self._is_in_mainland_china(location)
 
@@ -87,7 +90,9 @@ class CompositeFactsFactory(FactsFactory):
             weather_days = list(load_tokyo_weather())
 
         # 2. 检索周边 POI 并融合城市基准景点库
-        known_places = list(load_tokyo_places()) if ("tokyo" in dest_lower or "东京" in dest_lower) else []
+        known_places = (
+            list(load_tokyo_places()) if ("tokyo" in dest_lower or "东京" in dest_lower) else []
+        )
         try:
             live_places = poi_prov.search_places(
                 destination=request.destination,
@@ -119,6 +124,7 @@ class CompositeFactsFactory(FactsFactory):
             )
         except Exception:
             from app.fixtures.loader import load_tokyo_route_matrix
+
             route_matrix = load_tokyo_route_matrix()
 
         # 4. 汇率

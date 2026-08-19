@@ -492,15 +492,26 @@
 .summaryRoute {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin: 12px 0 14px;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 10px 0 14px;
   color: var(--teal);
-  font-size: 1.5rem;
+  font-size: 1.22rem;
+  line-height: 1.35;
+  word-break: break-word;
 }
 
-.summaryRoute span {
+.summaryCity {
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.summaryArrow {
   color: var(--coral);
-  margin: 0 20px;
+  margin: 0 4px;
+  flex-shrink: 0;
+  font-size: 1.1rem;
 }
 
 .summaryMeta {

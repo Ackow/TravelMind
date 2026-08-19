@@ -16,7 +16,7 @@ def test_tokyo_fixture_is_internally_consistent() -> None:
 
     assert trip.date_range.day_count == 5
     assert trip.travelers == 2
-    assert trip.constraints.total_budget.amount == 1_000_000
+    assert trip.constraints.total_budget.amount == 500_000
     assert trip.constraints.total_budget.currency == "CNY"
 
     expected_dates = {

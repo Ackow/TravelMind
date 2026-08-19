@@ -5,15 +5,17 @@ import { useEffect, useState } from "react";
 import { getTrip, type TripResponse } from "@/lib/api/trips";
 import { StartPlanningButton } from "./start-planning-button";
 import { CurrentPlan } from "./current-plan";
+import { FinalItinerary } from "./final/final-itinerary";
 
 export function TripDetail({ tripId }: { tripId: string }) {
+  const effectiveId = (!tripId || tripId === "tokyo-5d") ? "77777777-7777-7777-7777-777777777777" : tripId;
   const [trip, setTrip] = useState<TripResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
 
-    getTrip(tripId)
+    getTrip(effectiveId)
       .then((result) => {
         if (active) {
           setTrip(result);
@@ -28,13 +30,19 @@ export function TripDetail({ tripId }: { tripId: string }) {
     return () => {
       active = false;
     };
-  }, [tripId]);
+  }, [effectiveId]);
 
   if (error) {
     return <p role="alert">{error}</p>;
   }
   if (!trip) {
     return <p>正在读取旅行…</p>;
+  }
+
+  // 如果旅行已确认出案，渲染最终出案计划视图 FinalItinerary
+  const statusStr = trip.status as string;
+  if (statusStr === "completed" || statusStr === "accepted") {
+    return <FinalItinerary tripId={trip.id} />;
   }
 
   if (trip.current_plan_version !== null) {

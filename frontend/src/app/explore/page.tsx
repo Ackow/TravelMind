@@ -4,7 +4,7 @@ import Link from "next/link";
 import styles from "../support-page.module.css";
 
 const IDEAS = [
-  ["东京城市探索", "动漫、美食与城市漫步", "/icons/map-pin.svg"],
+  ["城市文化漫步", "历史、美食与街区漫游", "/icons/map-pin.svg"],
   ["博物馆主题旅行", "用开放时间组织室内行程", "/icons/museum.svg"],
   ["轻松低步行方案", "优先公共交通并减少换乘", "/icons/train.svg"],
 ] as const;

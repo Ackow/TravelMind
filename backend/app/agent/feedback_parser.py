@@ -1,5 +1,6 @@
 from datetime import date
 from typing import Annotated, Literal
+
 from pydantic import BaseModel, ConfigDict, Field
 
 from app.agent.llm_client import LLMClient
@@ -45,13 +46,14 @@ class SetPaceOp(BaseModel):
 
 
 FeedbackOp = Annotated[
-    SetBudgetOp | SetMaxWalkingOp | AdddRequiredPlaceOp | AddExcludedPlaceOp | SetPaceOp, 
+    SetBudgetOp | SetMaxWalkingOp | AdddRequiredPlaceOp | AddExcludedPlaceOp | SetPaceOp,
     Field(discriminator="op"),
 ]
 
 
 class ParsedFeedback(BaseModel):
     """LLM 输出的强类型反馈解析结果。"""
+
     model_config = ConfigDict(extra="forbid")
 
     summary: str = Field(description="对用户调整意图的简要中文概述")

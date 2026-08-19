@@ -12,6 +12,7 @@ services:
       POSTGRES_DB: travelmind_db
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./backend/scripts/init-databases.sql:/docker-entrypoint-initdb.d/init-databases.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U travelmind -d travelmind_db"]
       interval: 5s

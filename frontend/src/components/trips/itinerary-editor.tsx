@@ -17,14 +17,22 @@ import {
 } from "@/lib/api/trips";
 import styles from "./itinerary-editor.module.css";
 
-const REPLACEMENT_SUGGESTIONS = [
-  "浅草寺",
-  "东京国立博物馆",
-  "秋叶原",
-  "teamLab Borderless",
-  "明治神宫",
-  "SHIBUYA SKY",
-];
+const CITY_SUGGESTIONS: Record<string, string[]> = {
+  "南京": [
+    "夫子庙-秦淮风光带", "南京博物院", "南京总统府", "中山陵景区", "明孝陵景区",
+    "古鸡鸣寺", "玄武湖公园", "老门东历史街区", "先锋书店 (五台山总店)", "颐和路历史文化街区"
+  ],
+  "东京": [
+    "浅草寺", "东京晴空塔", "上野公园", "秋叶原电气街", "银座购物区",
+    "涩谷十字路口", "新宿御苑", "明治神宫", "teamLab Planets", "东京塔"
+  ],
+  "北京": [
+    "故宫博物院", "颐和园", "天坛公园", "八达岭长城", "南锣鼓巷",
+    "中国国家博物馆", "什刹海", "景山公园", "雍和宫", "798艺术区"
+  ],
+};
+
+const REPLACEMENT_SUGGESTIONS = CITY_SUGGESTIONS["南京"];
 
 type EditableActivity = ManualActivityEdit & {
   originalTitle: string;
@@ -77,11 +85,11 @@ function activityIcon(title: string) {
   return "/icons/attraction.svg";
 }
 
-function dayCaption(dayNumber: number, date: string) {
+function dayCaption(dayNumber: number, date: string, timezone = "Asia/Shanghai") {
   const weekday = new Intl.DateTimeFormat("zh-CN", {
     weekday: "short",
-    timeZone: "Asia/Tokyo",
-  }).format(new Date(`${date}T00:00:00+09:00`));
+    timeZone: timezone || "Asia/Shanghai",
+  }).format(new Date(`${date}T00:00:00Z`));
   return `Day ${dayNumber} · ${date.slice(5).replace("-", "/")} ${weekday}`;
 }
 

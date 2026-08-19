@@ -37,6 +37,10 @@ export function getTrip(tripId: string): Promise<TripResponse> {
   return apiRequest<TripResponse>("/api/v1/trips/" + tripId);
 }
 
+export function listTrips(limit = 50): Promise<TripResponse[]> {
+  return apiRequest<TripResponse[]>(`/api/v1/trips?limit=${limit}`);
+}
+
 export type PlanningRunResponse =
   components["schemas"]["PlanningRunResponse"];
 
@@ -91,6 +95,13 @@ export function getPlanVersion(
   );
 }
 
+export type PlanListResponse = components["schemas"]["PlanListResponse"];
+export type PlanVersionSummary = components["schemas"]["PlanVersionSummary"];
+
+export function listPlanVersions(tripId: string): Promise<PlanListResponse> {
+  return apiRequest<PlanListResponse>(`/api/v1/trips/${tripId}/plans`);
+}
+
 export type FeedbackResponse = components["schemas"]["FeedbackResponse"];
 
 export function submitWalkingFeedback(
@@ -116,6 +127,69 @@ export function submitWalkingFeedback(
   });
 }
 
+export function acceptPlanVersion(
+  tripId: string,
+  version: number,
+): Promise<PlanVersionResponse> {
+  return apiRequest<PlanVersionResponse>(
+    `/api/v1/trips/${tripId}/plans/${version}/accept`,
+    {
+      method: "POST",
+    },
+  );
+}
+
+export function checkoutPlanVersion(
+  tripId: string,
+  version: number,
+): Promise<TripResponse> {
+  return apiRequest<TripResponse>(
+    `/api/v1/trips/${tripId}/plans/${version}/checkout`,
+    {
+      method: "POST",
+    },
+  );
+}
+
+export type PlanningEventItem = {
+  id: string;
+  sequence: number;
+  type: string;
+  step?: string | null;
+  message: string;
+  payload?: Record<string, unknown>;
+  created_at: string;
+};
+
+export function listPlanningEvents(
+  tripId: string,
+  runId: string,
+): Promise<{ items: PlanningEventItem[] }> {
+  return apiRequest<{ items: PlanningEventItem[] }>(
+    `/api/v1/trips/${tripId}/planning-runs/${runId}/events`,
+  );
+}
+
+export function createFeedback(
+  tripId: string,
+  payload: {
+    base_plan_version: number;
+    message: string;
+    client_operations?: Array<Record<string, unknown>>;
+    auto_start_replanning?: boolean;
+  },
+): Promise<FeedbackResponse> {
+  return apiRequest<FeedbackResponse>(`/api/v1/trips/${tripId}/feedback`, {
+    method: "POST",
+    body: JSON.stringify({
+      base_plan_version: payload.base_plan_version,
+      message: payload.message,
+      client_operations: payload.client_operations || [],
+      auto_start_replanning: payload.auto_start_replanning ?? true,
+    }),
+  });
+}
+
 export type ManualActivityEdit = components["schemas"]["ManualActivityEdit"];
 export type ManualDayEdit = components["schemas"]["ManualDayEdit"];
 
@@ -135,3 +209,4 @@ export function submitManualPlanEdits(
     }),
   });
 }
+

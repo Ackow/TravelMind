@@ -1,10 +1,10 @@
 from datetime import UTC, datetime
 from typing import Any
+
 from app.agent.state import PlanState, PlanStatus
 from app.domain.research import RouteMatrix
-from app.planning.planner import build_itinerary
 from app.planning.models import PlanningFacts
-
+from app.planning.planner import build_itinerary
 
 
 def node_build_candidate(state: PlanState) -> dict[str, Any]:
@@ -14,19 +14,23 @@ def node_build_candidate(state: PlanState) -> dict[str, Any]:
     places = state.get("places")
     if not places:
         from app.fixtures.loader import load_tokyo_places
+
         places = tuple(load_tokyo_places())
 
     weather = state.get("weather_forecast")
     if not weather:
         from app.fixtures.loader import load_tokyo_weather
+
         weather = tuple(load_tokyo_weather())
 
     cells = state.get("route_matrix_cells")
     if not cells:
         from app.fixtures.loader import load_tokyo_route_matrix
+
         route_matrix = load_tokyo_route_matrix()
     else:
         from app.domain.common import DataQuality, SourceRef
+
         source = SourceRef(
             provider="composite",
             source_id="agent-matrix",
@@ -64,6 +68,9 @@ def node_build_candidate(state: PlanState) -> dict[str, Any]:
         return {
             "status": PlanStatus.FAILED,
             "last_error": f"行程规划生成失败: {exc}",
-            "audit_events": [event, {"node": "build_candidate", "error": str(exc), "timestamp": now_dt.isoformat()}],
+            "audit_events": [
+                event,
+                {"node": "build_candidate", "error": str(exc), "timestamp": now_dt.isoformat()},
+            ],
             "updated_at": now_dt,
         }

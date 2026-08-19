@@ -15,7 +15,7 @@ def test_create_trip_returns_server_fields() -> None:
     assert body["id"]
     assert body["status"] == "draft"
     assert body["revision"] == 1
-    assert body["destination"] == "东京"
+    assert body["destination"] == "南京"
     assert response.headers["location"] == f"/api/v1/trips/{body['id']}"
     assert response.headers["etag"] == '"1"'
 

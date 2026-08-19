@@ -1,7 +1,5 @@
-from datetime import date
 from fastapi.testclient import TestClient
 
-from app.domain.replanning import RemovePlaceOp, ReplacePlaceOp
 from app.fixtures.loader import load_tokyo_trip_request
 from app.main import create_app
 
@@ -58,7 +56,7 @@ def test_dynamic_replanning_preserves_unaffected_days_and_generates_diff() -> No
     v2_days = body["plan"]["itinerary"]["days"]
     for i in unaffected_indices:
         v2_act_ids = [a["id"] for a in v2_days[i]["activities"]]
-        assert v1_unaffected_map[i] == v2_act_ids, f"第 {i+1} 天未受波及，活动 ID 必须完全一致！"
+        assert v1_unaffected_map[i] == v2_act_ids, f"第 {i + 1} 天未受波及，活动 ID 必须完全一致！"
 
     # 5. 验证 Diff 报告准确性
     diff = body["diff"]

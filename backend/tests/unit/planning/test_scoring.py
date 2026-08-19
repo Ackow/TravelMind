@@ -3,27 +3,27 @@ from app.planning.scoring import is_eligible, score_place
 from app.scripts.generate_fixture_plan import build_fixture_facts
 
 
-def test_anime_interest_increases_anime_place_score() -> None:
+def test_culture_interest_increases_culture_place_score() -> None:
     facts = build_fixture_facts()
     places = {place.id: place for place in facts.places}
     weather = facts.weather[0]
     converter = MoneyConverter(facts.exchange_rates)
 
-    anime = score_place(
-        place=places["tm_place_akihabara"],
+    culture = score_place(
+        place=places["tm_place_nanjing_museum"],
         request=facts.request,
         weather=weather,
         converter=converter,
     )
     park = score_place(
-        place=places["tm_place_ueno_park"],
+        place=places["tm_place_xuanwu_lake"],
         request=facts.request,
         weather=weather,
         converter=converter,
     )
 
-    assert anime.score > park.score
-    assert any("动漫" in reason for reason in anime.reasons)
+    assert culture.score > park.score
+    assert any("文化" in reason or "历史" in reason for reason in culture.reasons)
 
 
 def test_poor_weather_filters_outdoor_place() -> None:
@@ -33,7 +33,7 @@ def test_poor_weather_filters_outdoor_place() -> None:
 
     assert (
         is_eligible(
-            places["tm_place_sensoji"],
+            places["tm_place_fuzimiao"],
             facts.request,
             poor_weather,
         )
@@ -41,7 +41,7 @@ def test_poor_weather_filters_outdoor_place() -> None:
     )
     assert (
         is_eligible(
-            places["tm_place_tokyo_national_museum"],
+            places["tm_place_nanjing_museum"],
             facts.request,
             poor_weather,
         )

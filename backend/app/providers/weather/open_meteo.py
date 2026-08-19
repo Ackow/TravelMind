@@ -1,4 +1,5 @@
 from datetime import UTC, date, datetime
+
 import httpx
 
 from app.domain.common import DataQuality, DateRange, GeoPoint, SourceRef
@@ -121,16 +122,8 @@ class OpenMeteoWeatherProvider(WeatherProvider):
 
             sunrise_raw = sunrises[data_idx] if data_idx < len(sunrises) else None
             sunset_raw = sunsets[data_idx] if data_idx < len(sunsets) else None
-            sunrise_time = (
-                datetime.fromisoformat(sunrise_raw).time()
-                if sunrise_raw
-                else None
-            )
-            sunset_time = (
-                datetime.fromisoformat(sunset_raw).time()
-                if sunset_raw
-                else None
-            )
+            sunrise_time = datetime.fromisoformat(sunrise_raw).time() if sunrise_raw else None
+            sunset_time = datetime.fromisoformat(sunset_raw).time() if sunset_raw else None
 
             results.append(
                 WeatherDay(

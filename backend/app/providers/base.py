@@ -1,4 +1,3 @@
-from datetime import date
 from typing import Protocol, runtime_checkable
 
 from app.domain.common import DateRange, GeoPoint
@@ -60,7 +59,7 @@ class PoiProvider(Protocol):
         destination: str,
         location: GeoPoint,
         categories: list[PlaceCategory] | None = None,
-        limit: int = 20
+        limit: int = 20,
     ) -> list[Place]:
         """检索目的地的候选游玩地点。"""
         ...

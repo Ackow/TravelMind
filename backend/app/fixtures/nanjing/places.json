@@ -1,0 +1,268 @@
+{
+  "places": [
+    {
+      "id": "tm_place_fuzimiao",
+      "name": "夫子庙-秦淮风光带",
+      "localized_name": "夫子庙",
+      "categories": ["attraction", "neighborhood"],
+      "address": "江苏省南京市秦淮区贡院街",
+      "location": {"latitude": 32.0195, "longitude": 118.7876},
+      "rating": 4.6,
+      "rating_count": 25000,
+      "estimated_visit_minutes": 120,
+      "indoor_outdoor": "outdoor",
+      "opening_periods": [
+        {"day_of_week": 1, "open_time": "08:30", "close_time": "22:00", "closed": false},
+        {"day_of_week": 2, "open_time": "08:30", "close_time": "22:00", "closed": false},
+        {"day_of_week": 3, "open_time": "08:30", "close_time": "22:00", "closed": false},
+        {"day_of_week": 4, "open_time": "08:30", "close_time": "22:00", "closed": false},
+        {"day_of_week": 5, "open_time": "08:30", "close_time": "22:00", "closed": false},
+        {"day_of_week": 6, "open_time": "08:30", "close_time": "22:00", "closed": false},
+        {"day_of_week": 7, "open_time": "08:30", "close_time": "22:00", "closed": false}
+      ],
+      "special_opening_periods": [],
+      "admission": {"amount": 0, "currency": "CNY"},
+      "tags": ["历史", "城市漫步", "夜景"],
+      "reservation_required": false,
+      "accessible": true,
+      "website_url": null,
+      "source": {
+        "provider": "mock",
+        "source_id": "mock-fuzimiao",
+        "source_url": null,
+        "fetched_at": "2026-09-30T00:00:00Z",
+        "expires_at": null,
+        "data_quality": "mock"
+      }
+    },
+    {
+      "id": "tm_place_zhongshan_ling",
+      "name": "中山陵",
+      "localized_name": "中山陵景区",
+      "categories": ["attraction", "park"],
+      "address": "江苏省南京市玄武区钟山风景名胜区",
+      "location": {"latitude": 32.0621, "longitude": 118.8488},
+      "rating": 4.8,
+      "rating_count": 30000,
+      "estimated_visit_minutes": 150,
+      "indoor_outdoor": "outdoor",
+      "opening_periods": [
+        {"day_of_week": 1, "open_time": null, "close_time": null, "closed": true},
+        {"day_of_week": 2, "open_time": "08:30", "close_time": "17:00", "closed": false},
+        {"day_of_week": 3, "open_time": "08:30", "close_time": "17:00", "closed": false},
+        {"day_of_week": 4, "open_time": "08:30", "close_time": "17:00", "closed": false},
+        {"day_of_week": 5, "open_time": "08:30", "close_time": "17:00", "closed": false},
+        {"day_of_week": 6, "open_time": "08:30", "close_time": "17:00", "closed": false},
+        {"day_of_week": 7, "open_time": "08:30", "close_time": "17:00", "closed": false}
+      ],
+      "special_opening_periods": [],
+      "admission": {"amount": 0, "currency": "CNY"},
+      "tags": ["历史", "风景名胜", "文化古迹"],
+      "reservation_required": true,
+      "accessible": true,
+      "website_url": null,
+      "source": {
+        "provider": "mock",
+        "source_id": "mock-zhongshan-ling",
+        "source_url": null,
+        "fetched_at": "2026-09-30T00:00:00Z",
+        "expires_at": null,
+        "data_quality": "mock"
+      }
+    },
+    {
+      "id": "tm_place_nanjing_museum",
+      "name": "南京博物院",
+      "localized_name": "南京博物院",
+      "categories": ["museum"],
+      "address": "江苏省南京市玄武区中山东路321号",
+      "location": {"latitude": 32.0421, "longitude": 118.8262},
+      "rating": 4.9,
+      "rating_count": 28000,
+      "estimated_visit_minutes": 180,
+      "indoor_outdoor": "indoor",
+      "opening_periods": [
+        {"day_of_week": 1, "open_time": null, "close_time": null, "closed": true},
+        {"day_of_week": 2, "open_time": "09:00", "close_time": "17:00", "closed": false},
+        {"day_of_week": 3, "open_time": "09:00", "close_time": "17:00", "closed": false},
+        {"day_of_week": 4, "open_time": "09:00", "close_time": "17:00", "closed": false},
+        {"day_of_week": 5, "open_time": "09:00", "close_time": "17:00", "closed": false},
+        {"day_of_week": 6, "open_time": "09:00", "close_time": "17:00", "closed": false},
+        {"day_of_week": 7, "open_time": "09:00", "close_time": "17:00", "closed": false}
+      ],
+      "admission": {"amount": 0, "currency": "CNY"},
+      "tags": ["博物馆", "历史", "文化古迹", "雨天"],
+      "reservation_required": true,
+      "accessible": true,
+      "source": {
+        "provider": "mock",
+        "source_id": "mock-nanjing-museum",
+        "source_url": null,
+        "fetched_at": "2026-09-30T00:00:00Z",
+        "expires_at": null,
+        "data_quality": "mock"
+      }
+    },
+    {
+      "id": "tm_place_presidential_palace",
+      "name": "南京总统府",
+      "categories": ["attraction", "museum"],
+      "address": "江苏省南京市玄武区长江路292号",
+      "location": {"latitude": 32.0442, "longitude": 118.7967},
+      "rating": 4.5,
+      "estimated_visit_minutes": 120,
+      "indoor_outdoor": "mixed",
+      "opening_periods": [
+        {"day_of_week": 1, "open_time": null, "close_time": null, "closed": true},
+        {"day_of_week": 2, "open_time": "08:30", "close_time": "17:00", "closed": false},
+        {"day_of_week": 3, "open_time": "08:30", "close_time": "17:00", "closed": false},
+        {"day_of_week": 4, "open_time": "08:30", "close_time": "17:00", "closed": false},
+        {"day_of_week": 5, "open_time": "08:30", "close_time": "17:00", "closed": false},
+        {"day_of_week": 6, "open_time": "08:30", "close_time": "17:00", "closed": false},
+        {"day_of_week": 7, "open_time": "08:30", "close_time": "17:00", "closed": false}
+      ],
+      "admission": {"amount": 3500, "currency": "CNY"},
+      "tags": ["历史", "建筑"],
+      "reservation_required": true,
+      "source": {
+        "provider": "mock",
+        "source_id": "mock-presidential-palace",
+        "source_url": null,
+        "fetched_at": "2026-09-30T00:00:00Z",
+        "expires_at": null,
+        "data_quality": "mock"
+      }
+    },
+    {
+      "id": "tm_place_xuanwu_lake",
+      "name": "玄武湖公园",
+      "categories": ["park", "attraction"],
+      "address": "江苏省南京市玄武区玄武巷1号",
+      "location": {"latitude": 32.0725, "longitude": 118.7958},
+      "rating": 4.7,
+      "estimated_visit_minutes": 120,
+      "indoor_outdoor": "outdoor",
+      "admission": {"amount": 0, "currency": "CNY"},
+      "tags": ["公园", "城市漫步"],
+      "source": {
+        "provider": "mock",
+        "source_id": "mock-xuanwu-lake",
+        "source_url": null,
+        "fetched_at": "2026-09-30T00:00:00Z",
+        "expires_at": null,
+        "data_quality": "mock"
+      }
+    },
+    {
+      "id": "tm_place_jiming_temple",
+      "name": "古鸡鸣寺",
+      "categories": ["temple", "attraction"],
+      "address": "江苏省南京市玄武区鸡鸣寺路1号",
+      "location": {"latitude": 32.0603, "longitude": 118.7969},
+      "rating": 4.6,
+      "estimated_visit_minutes": 90,
+      "indoor_outdoor": "outdoor",
+      "admission": {"amount": 1000, "currency": "CNY"},
+      "tags": ["历史", "城市漫步", "祈福"],
+      "source": {
+        "provider": "mock",
+        "source_id": "mock-jiming-temple",
+        "source_url": null,
+        "fetched_at": "2026-09-30T00:00:00Z",
+        "expires_at": null,
+        "data_quality": "mock"
+      }
+    },
+    {
+      "id": "tm_place_laomendong",
+      "name": "老门东历史街区",
+      "categories": ["neighborhood", "food"],
+      "address": "江苏省南京市秦淮区剪子巷54号",
+      "location": {"latitude": 32.0138, "longitude": 118.7885},
+      "rating": 4.6,
+      "estimated_visit_minutes": 120,
+      "indoor_outdoor": "mixed",
+      "admission": {"amount": 0, "currency": "CNY"},
+      "tags": ["美食", "历史", "城市漫步"],
+      "source": {
+        "provider": "mock",
+        "source_id": "mock-laomendong",
+        "source_url": null,
+        "fetched_at": "2026-09-30T00:00:00Z",
+        "expires_at": null,
+        "data_quality": "mock"
+      }
+    },
+    {
+      "id": "tm_place_xinjiekou",
+      "name": "新街口商圈",
+      "categories": ["neighborhood", "food", "shopping"],
+      "address": "江苏省南京市秦淮区中山南路",
+      "location": {"latitude": 32.0416, "longitude": 118.7842},
+      "rating": 4.5,
+      "estimated_visit_minutes": 120,
+      "indoor_outdoor": "indoor",
+      "admission": {"amount": 0, "currency": "CNY"},
+      "tags": ["美食", "购物", "雨天"],
+      "source": {
+        "provider": "mock",
+        "source_id": "mock-xinjiekou",
+        "source_url": null,
+        "fetched_at": "2026-09-30T00:00:00Z",
+        "expires_at": null,
+        "data_quality": "mock"
+      }
+    },
+    {
+      "id": "tm_place_memorial_hall",
+      "name": "侵华日军南京大屠杀遇难同胞纪念馆",
+      "categories": ["museum", "attraction"],
+      "address": "江苏省南京市建邺区水西门大街418号",
+      "location": {"latitude": 32.0354, "longitude": 118.7447},
+      "rating": 4.9,
+      "estimated_visit_minutes": 150,
+      "indoor_outdoor": "indoor",
+      "opening_periods": [
+        {"day_of_week": 1, "open_time": null, "close_time": null, "closed": true},
+        {"day_of_week": 2, "open_time": "08:30", "close_time": "16:30", "closed": false},
+        {"day_of_week": 3, "open_time": "08:30", "close_time": "16:30", "closed": false},
+        {"day_of_week": 4, "open_time": "08:30", "close_time": "16:30", "closed": false},
+        {"day_of_week": 5, "open_time": "08:30", "close_time": "16:30", "closed": false},
+        {"day_of_week": 6, "open_time": "08:30", "close_time": "16:30", "closed": false},
+        {"day_of_week": 7, "open_time": "08:30", "close_time": "16:30", "closed": false}
+      ],
+      "admission": {"amount": 0, "currency": "CNY"},
+      "tags": ["历史", "纪念馆", "雨天"],
+      "reservation_required": true,
+      "source": {
+        "provider": "mock",
+        "source_id": "mock-memorial-hall",
+        "source_url": null,
+        "fetched_at": "2026-09-30T00:00:00Z",
+        "expires_at": null,
+        "data_quality": "mock"
+      }
+    },
+    {
+      "id": "tm_place_niushoushan",
+      "name": "牛首山文化旅游区",
+      "categories": ["attraction", "museum"],
+      "address": "江苏省南京市江宁区宁丹大道18号",
+      "location": {"latitude": 31.9126, "longitude": 118.7485},
+      "rating": 4.7,
+      "estimated_visit_minutes": 180,
+      "indoor_outdoor": "indoor",
+      "admission": {"amount": 14500, "currency": "CNY"},
+      "tags": ["文化", "建筑", "雨天"],
+      "reservation_required": true,
+      "source": {
+        "provider": "mock",
+        "source_id": "mock-niushoushan",
+        "source_url": null,
+        "fetched_at": "2026-09-30T00:00:00Z",
+        "expires_at": null,
+        "data_quality": "mock"
+      }
+    }
+  ]
+}

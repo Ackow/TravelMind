@@ -1,4 +1,5 @@
 from uuid import UUID
+
 from app.application.errors import ApplicationError
 from app.application.models import PlanVersionRecord, TripRecord
 from app.application.repository import TravelRepository

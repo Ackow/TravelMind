@@ -9,6 +9,7 @@ import styles from "@/app/layout.module.css";
 
 const NAV_ITEMS = [
   { href: "/", label: "我的旅行" },
+  { href: "/trips/history", label: "历史计划" },
   { href: "/explore", label: "探索" },
   { href: "/help", label: "帮助" },
 ] as const;
@@ -59,8 +60,10 @@ export function SiteHeader() {
         <div className={styles.links}>
           {NAV_ITEMS.map((item) => {
             const active =
-              item.href === "/"
-                ? pathname === "/" || pathname.startsWith("/trips")
+              item.href === "/trips/history"
+                ? pathname.startsWith("/trips/history")
+                : item.href === "/"
+                ? pathname === "/" || (pathname.startsWith("/trips") && !pathname.startsWith("/trips/history"))
                 : pathname.startsWith(item.href);
             return (
               <Link
@@ -107,7 +110,7 @@ export function SiteHeader() {
                 </header>
                 <div className={unread > 0 ? styles.unreadItem : undefined}>
                   <span>计划检查完成</span>
-                  <p>东京旅行草案已通过硬性约束检查。</p>
+                  <p>旅行计划草案已通过硬性约束检查。</p>
                 </div>
                 <div className={unread > 0 ? styles.unreadItem : undefined}>
                   <span>天气信息已更新</span>

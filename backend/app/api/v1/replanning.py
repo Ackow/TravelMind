@@ -1,6 +1,7 @@
 from uuid import UUID
+
 from fastapi import APIRouter, status
-from pydantic import BaseModel, Field
+from pydantic import Field
 
 from app.api.dependencies import ClockDep, FactsFactoryDep, RepositoryDep
 from app.api.schemas import ApiModel, CurrentPlanResponse, PlanningRunResponse

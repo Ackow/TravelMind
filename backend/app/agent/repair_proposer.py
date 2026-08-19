@@ -1,14 +1,17 @@
 from typing import Literal
+
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.domain.constraints import ConstraintViolation
 from app.agent.llm_client import LLMClient
+from app.domain.constraints import ConstraintViolation
 from app.domain.itinerary import DayPlan
 
 
 class RepairAction(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    action_type: Literal["swap_activities", "advance_start_time", "remove_activity", "shorten_duration"]
+    action_type: Literal[
+        "swap_activities", "advance_start_time", "remove_activity", "shorten_duration"
+    ]
     target_activity_title: str
     secondary_activity_title: str | None = None
     minutes_adjustment: int | None = None
@@ -36,16 +39,15 @@ class RepairProposer:
     def __init__(self, llm_client: LLMClient) -> None:
         self._llm = llm_client
 
-
     def propose(
-        self, 
-        violations: list[ConstraintViolation], 
-        day_plan: DayPlan
+        self, violations: list[ConstraintViolation], day_plan: DayPlan
     ) -> list[RepairAction]:
         if not violations:
             return []
 
-        v_texts = [f"- 错误码: {v.code}, 信息: {v.message}, 修复提示: {v.repair_hint}" for v in violations]
+        v_texts = [
+            f"- 错误码: {v.code}, 信息: {v.message}, 修复提示: {v.repair_hint}" for v in violations
+        ]
         act_texts = [f"- {a.title} ({a.start_at} 至 {a.end_at})" for a in day_plan.activities]
 
         user_prompt = f"""

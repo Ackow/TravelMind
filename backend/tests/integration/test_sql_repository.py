@@ -1,5 +1,6 @@
-from datetime import date, datetime, timezone
+from datetime import UTC, datetime
 from uuid import uuid4
+
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
@@ -7,7 +8,6 @@ from sqlalchemy.orm import sessionmaker
 
 from app.application.errors import ApplicationError
 from app.application.models import (
-    FeedbackRecord,
     PlanningEventRecord,
     PlanningEventType,
     PlanningRunRecord,
@@ -22,40 +22,19 @@ from app.application.models import (
 from app.core.config import get_settings
 from app.core.database import SessionLocal, engine
 from app.domain.constraints import ConstraintReport
-from app.domain.itinerary import BudgetSummary
-from app.domain.common import Money
 from app.fixtures.loader import load_tokyo_trip_request
-from app.infrastructure.tokyo_facts_factory import TokyoFactsFactory
-from app.planning.planner import build_itinerary
 from app.infrastructure.sql_repository import SqlAlchemyTravelRepository
+from app.infrastructure.tokyo_facts_factory import TokyoFactsFactory
 from app.main import create_app
 from app.persistence.base import Base
+from app.planning.planner import build_itinerary
 
 
-@pytest.fixture
-def sqlite_repo(tmp_path):
-    """创建临时独立 SQLite 数据库仓储。"""
-    db_file = tmp_path / "test_travelmind.db"
-    test_engine = create_engine(f"sqlite:///{db_file}")
-    Base.metadata.create_all(test_engine)
-    session_factory = sessionmaker(bind=test_engine)
-    return SqlAlchemyTravelRepository(session_factory)
-
-
-@pytest.fixture
-def postgres_repo():
-    """使用 Docker 中运行的 PostgreSQL 16 数据库仓储。"""
-    settings = get_settings()
-    try:
-        Base.metadata.create_all(engine)
-        return SqlAlchemyTravelRepository(SessionLocal)
-    except Exception as exc:
-        pytest.skip(f"PostgreSQL 连接不可用，跳过 PostgreSQL 专项测试: {exc}")
 
 
 def test_trip_crud_and_optimistic_locking(sqlite_repo):
     """验证旅行记录 CRUD 与乐观并发锁保护 (SQLite)。"""
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     trip_id = uuid4()
     trip = TripRecord(
         id=trip_id,
@@ -91,7 +70,7 @@ def test_trip_crud_and_optimistic_locking(sqlite_repo):
 
 def test_plan_versions_and_runs_lifecycle(postgres_repo):
     """验证在 PostgreSQL 中的多版本计划与规划任务完整生命周期。"""
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     trip_id = uuid4()
     trip = TripRecord(
         id=trip_id,
@@ -235,7 +214,7 @@ def test_version_history_and_checkout(postgres_repo):
     """验证版本谱系追踪与计划版本检出回滚服务。"""
     from app.application.versioning import checkout_plan_version, get_plan_history
 
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     trip_id = uuid4()
     trip = TripRecord(
         id=trip_id,

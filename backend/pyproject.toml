@@ -8,6 +8,7 @@ dependencies = [
     "fastapi",
     "langgraph-checkpoint-postgres>=3.1.2",
     "langgraph-checkpoint-sqlite>=3.1.1",
+    "mcp>=2.0.0",
     "psycopg[binary]>=3.2",
     "pydantic-settings",
     "tzdata",
@@ -24,7 +25,7 @@ dev = [
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-pythonpath = ["."]
+pythonpath = [".", ".."]
 
 [tool.ruff]
 line-length = 100

@@ -1,5 +1,6 @@
 from datetime import UTC, datetime
 from typing import Any
+
 from app.agent.state import PlanState, PlanStatus
 from app.infrastructure.composite_facts_factory import CompositeFactsFactory
 

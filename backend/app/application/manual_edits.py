@@ -48,7 +48,15 @@ def apply_manual_edits(
     edits_by_date = {item["date"]: item for item in day_edits}
     now = clock.now()
     places = list(facts_factory.build(trip.request, now).places)
-    places_by_name = {place.name.casefold(): place for place in places}
+    from app.fixtures.loader import load_nanjing_places
+
+    places.extend(load_nanjing_places())
+
+    places_by_name = {}
+    for place in places:
+        places_by_name[place.name.casefold()] = place
+        if place.localized_name:
+            places_by_name[place.localized_name.casefold()] = place
 
     # 按日期逐个应用用户编辑：支持新增、替换、删除和调整时间
     for day in itinerary_data["days"]:

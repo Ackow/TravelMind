@@ -47,7 +47,7 @@ export default function HomePage() {
             priority
           />
           <p className={styles.emptyKicker}>从一个清晰的需求开始</p>
-          <h2>还没有旅行计划</h2>
+          <h2>创建旅行计划</h2>
           <p>填写目的地、日期和偏好，TravelMind 会为你构建可调整的行程。</p>
           <Link className={styles.primaryButton} href="/trips/new">
             创建第一段旅行

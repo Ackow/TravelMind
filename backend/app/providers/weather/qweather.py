@@ -1,8 +1,10 @@
 from datetime import UTC, date, datetime
+
 import httpx
+
 from app.domain.common import DataQuality, DateRange, GeoPoint, SourceRef
 from app.domain.research import OutdoorSuitability, WeatherCondition, WeatherDay
-from app.providers.base import ProviderError, ProviderTimeoutError, WeatherProvider
+from app.providers.base import ProviderError, WeatherProvider
 
 
 class QWeatherProvider(WeatherProvider):
@@ -30,18 +32,22 @@ class QWeatherProvider(WeatherProvider):
             clean_host = api_host.rstrip("/")
             if not clean_host.startswith("http"):
                 clean_host = f"https://{clean_host}"
-            endpoints.extend([
-                f"{clean_host}/v7/weather/3d",
-                f"{clean_host}/v7/weather/7d",
-            ])
+            endpoints.extend(
+                [
+                    f"{clean_host}/v7/weather/3d",
+                    f"{clean_host}/v7/weather/7d",
+                ]
+            )
 
         # 默认官方端点
-        endpoints.extend([
-            "https://devapi.qweather.com/v7/weather/3d",
-            "https://api.qweather.com/v7/weather/3d",
-            "https://devapi.qweather.com/v7/weather/7d",
-            "https://api.qweather.com/v7/weather/7d",
-        ])
+        endpoints.extend(
+            [
+                "https://devapi.qweather.com/v7/weather/3d",
+                "https://api.qweather.com/v7/weather/3d",
+                "https://devapi.qweather.com/v7/weather/7d",
+                "https://api.qweather.com/v7/weather/7d",
+            ]
+        )
         self.endpoints = endpoints
 
     @staticmethod
@@ -121,11 +127,17 @@ class QWeatherProvider(WeatherProvider):
                     condition=cond,
                     temperature_min_c=float(item.get("tempMin", 20)),
                     temperature_max_c=float(item.get("tempMax", 30)),
-                    rain_probability=float(item.get("precip", "0.0")) / 100.0 if item.get("precip") else 0.1,
+                    rain_probability=float(item.get("precip", "0.0")) / 100.0
+                    if item.get("precip")
+                    else 0.1,
                     precipitation_mm=float(item.get("precip", 0.0)) if item.get("precip") else 0.0,
                     outdoor_suitability=suit,
-                    sunrise_time=datetime.strptime(sunrise_str, "%H:%M").time() if sunrise_str else None,
-                    sunset_time=datetime.strptime(sunset_str, "%H:%M").time() if sunset_str else None,
+                    sunrise_time=datetime.strptime(sunrise_str, "%H:%M").time()
+                    if sunrise_str
+                    else None,
+                    sunset_time=datetime.strptime(sunset_str, "%H:%M").time()
+                    if sunset_str
+                    else None,
                     source=SourceRef(
                         provider="qweather",
                         source_url="https://www.qweather.com",

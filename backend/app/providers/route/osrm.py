@@ -1,9 +1,11 @@
 import math
+
 import httpx
+
 from app.domain.common import GeoPoint, Money
 from app.domain.research import RouteMatrixCell, RouteMatrixStatus
 from app.domain.trip import TransportMode
-from app.providers.base import ProviderError, ProviderTimeoutError, RouteProvider
+from app.providers.base import RouteProvider
 
 
 def haversine_distance_meters(p1: GeoPoint, p2: GeoPoint) -> int:
@@ -16,7 +18,6 @@ def haversine_distance_meters(p1: GeoPoint, p2: GeoPoint) -> int:
     a = math.sin(dlat / 2) ** 2 + math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2) ** 2
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
     return int(earth_radius * c)
-
 
 
 class OSRMRouteProvider(RouteProvider):
@@ -78,12 +79,22 @@ class OSRMRouteProvider(RouteProvider):
         cells: list[RouteMatrixCell] = []
         for i, (orig_id, _) in enumerate(origins):
             for j, (dest_id, _) in enumerate(destinations):
-                duration_sec = durations[i][j] if i < len(durations) and j < len(durations[i]) else None
-                distance_m = distances[i][j] if distances and i < len(distances) and j < len(distances[i]) else None
+                duration_sec = (
+                    durations[i][j] if i < len(durations) and j < len(durations[i]) else None
+                )
+                distance_m = (
+                    distances[i][j]
+                    if distances and i < len(distances) and j < len(distances[i])
+                    else None
+                )
 
                 # 公共交通耗时系数为驾车的 1.25 倍（含等车与换乘）
                 mult = 1.25 if mode == TransportMode.PUBLIC_TRANSIT else 1.0
-                duration_min = max(3, int(round((duration_sec * mult) / 60.0))) if duration_sec is not None else 15
+                duration_min = (
+                    max(3, int(round((duration_sec * mult) / 60.0)))
+                    if duration_sec is not None
+                    else 15
+                )
                 dist_val = int(distance_m) if distance_m is not None else (duration_min * 400)
                 walking_m = self._calc_walking_meters(mode, dist_val)
 
@@ -98,7 +109,11 @@ class OSRMRouteProvider(RouteProvider):
                         walking_meters=walking_m,
                         cost=Money(amount=400, currency="CNY")
                         if "nanjing" in orig_id
-                        else (Money(amount=200, currency="JPY") if mode == TransportMode.PUBLIC_TRANSIT else None),
+                        else (
+                            Money(amount=200, currency="JPY")
+                            if mode == TransportMode.PUBLIC_TRANSIT
+                            else None
+                        ),
                     )
                 )
         return cells

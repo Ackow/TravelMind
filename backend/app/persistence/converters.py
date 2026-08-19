@@ -1,4 +1,5 @@
 from uuid import UUID
+
 from app.application.models import (
     FeedbackRecord,
     PlanningEventRecord,
@@ -163,6 +164,7 @@ def feedback_to_table(record: FeedbackRecord) -> FeedbackTable:
 
 def table_to_feedback(row: FeedbackTable) -> FeedbackRecord:
     from datetime import date
+
     return FeedbackRecord(
         id=row.id,
         trip_id=row.trip_id,

@@ -1,0 +1,32 @@
+{
+  "cells": [
+    {"origin_place_id":"tm_place_fuzimiao","destination_place_id":"tm_place_laomendong","mode":"walking","status":"ok","duration_minutes":10,"distance_meters":800,"walking_meters":800,"cost":{"amount":0,"currency":"CNY"}},
+    {"origin_place_id":"tm_place_laomendong","destination_place_id":"tm_place_fuzimiao","mode":"walking","status":"ok","duration_minutes":10,"distance_meters":800,"walking_meters":800,"cost":{"amount":0,"currency":"CNY"}},
+    {"origin_place_id":"tm_place_fuzimiao","destination_place_id":"tm_place_xinjiekou","mode":"public_transit","status":"ok","duration_minutes":15,"distance_meters":2800,"walking_meters":400,"cost":{"amount":200,"currency":"CNY"}},
+    {"origin_place_id":"tm_place_xinjiekou","destination_place_id":"tm_place_fuzimiao","mode":"public_transit","status":"ok","duration_minutes":15,"distance_meters":2800,"walking_meters":400,"cost":{"amount":200,"currency":"CNY"}},
+    {"origin_place_id":"tm_place_xinjiekou","destination_place_id":"tm_place_presidential_palace","mode":"public_transit","status":"ok","duration_minutes":10,"distance_meters":1800,"walking_meters":350,"cost":{"amount":200,"currency":"CNY"}},
+    {"origin_place_id":"tm_place_presidential_palace","destination_place_id":"tm_place_xinjiekou","mode":"public_transit","status":"ok","duration_minutes":10,"distance_meters":1800,"walking_meters":350,"cost":{"amount":200,"currency":"CNY"}},
+    {"origin_place_id":"tm_place_presidential_palace","destination_place_id":"tm_place_jiming_temple","mode":"public_transit","status":"ok","duration_minutes":12,"distance_meters":2200,"walking_meters":400,"cost":{"amount":200,"currency":"CNY"}},
+    {"origin_place_id":"tm_place_jiming_temple","destination_place_id":"tm_place_presidential_palace","mode":"public_transit","status":"ok","duration_minutes":12,"distance_meters":2200,"walking_meters":400,"cost":{"amount":200,"currency":"CNY"}},
+    {"origin_place_id":"tm_place_jiming_temple","destination_place_id":"tm_place_xuanwu_lake","mode":"walking","status":"ok","duration_minutes":8,"distance_meters":600,"walking_meters":600,"cost":{"amount":0,"currency":"CNY"}},
+    {"origin_place_id":"tm_place_xuanwu_lake","destination_place_id":"tm_place_jiming_temple","mode":"walking","status":"ok","duration_minutes":8,"distance_meters":600,"walking_meters":600,"cost":{"amount":0,"currency":"CNY"}},
+    {"origin_place_id":"tm_place_xuanwu_lake","destination_place_id":"tm_place_nanjing_museum","mode":"public_transit","status":"ok","duration_minutes":20,"distance_meters":4500,"walking_meters":500,"cost":{"amount":300,"currency":"CNY"}},
+    {"origin_place_id":"tm_place_nanjing_museum","destination_place_id":"tm_place_xuanwu_lake","mode":"public_transit","status":"ok","duration_minutes":20,"distance_meters":4500,"walking_meters":500,"cost":{"amount":300,"currency":"CNY"}},
+    {"origin_place_id":"tm_place_nanjing_museum","destination_place_id":"tm_place_zhongshan_ling","mode":"public_transit","status":"ok","duration_minutes":18,"distance_meters":3800,"walking_meters":600,"cost":{"amount":200,"currency":"CNY"}},
+    {"origin_place_id":"tm_place_zhongshan_ling","destination_place_id":"tm_place_nanjing_museum","mode":"public_transit","status":"ok","duration_minutes":18,"distance_meters":3800,"walking_meters":600,"cost":{"amount":200,"currency":"CNY"}},
+    {"origin_place_id":"tm_place_xinjiekou","destination_place_id":"tm_place_memorial_hall","mode":"public_transit","status":"ok","duration_minutes":18,"distance_meters":3600,"walking_meters":450,"cost":{"amount":200,"currency":"CNY"}},
+    {"origin_place_id":"tm_place_memorial_hall","destination_place_id":"tm_place_xinjiekou","mode":"public_transit","status":"ok","duration_minutes":18,"distance_meters":3600,"walking_meters":450,"cost":{"amount":200,"currency":"CNY"}},
+    {"origin_place_id":"tm_place_fuzimiao","destination_place_id":"tm_place_niushoushan","mode":"public_transit","status":"ok","duration_minutes":45,"distance_meters":18000,"walking_meters":800,"cost":{"amount":500,"currency":"CNY"}},
+    {"origin_place_id":"tm_place_niushoushan","destination_place_id":"tm_place_fuzimiao","mode":"public_transit","status":"ok","duration_minutes":45,"distance_meters":18000,"walking_meters":800,"cost":{"amount":500,"currency":"CNY"}},
+    {"origin_place_id":"tm_place_zhongshan_ling","destination_place_id":"tm_place_fuzimiao","mode":"public_transit","status":"ok","duration_minutes":28,"distance_meters":7500,"walking_meters":600,"cost":{"amount":300,"currency":"CNY"}},
+    {"origin_place_id":"tm_place_fuzimiao","destination_place_id":"tm_place_zhongshan_ling","mode":"public_transit","status":"ok","duration_minutes":28,"distance_meters":7500,"walking_meters":600,"cost":{"amount":300,"currency":"CNY"}}
+  ],
+  "source": {
+    "provider": "mock",
+    "source_id": "nanjing-route-matrix-v1",
+    "source_url": null,
+    "fetched_at": "2026-09-30T00:00:00Z",
+    "expires_at": null,
+    "data_quality": "mock"
+  }
+}

@@ -30,7 +30,7 @@ def test_manual_edit_creates_child_version_and_preserves_v1() -> None:
                 "activities": [
                     {
                         "id": item["id"],
-                        "title": "浅草寺" if index == 0 else item["title"],
+                        "title": "夫子庙-秦淮风光带" if index == 0 else item["title"],
                         "start_time": _clock(item["start_at"]),
                         "end_time": _clock(item["end_at"]),
                         "removed": False,
@@ -49,7 +49,7 @@ def test_manual_edit_creates_child_version_and_preserves_v1() -> None:
     assert body["plan"]["parent_version"] == 1
     assert body["planning_run"]["result_plan_version"] == 2
     assert client.get(base + "/plans/1").json()["version"] == 1
-    assert body["plan"]["itinerary"]["days"][0]["activities"][0]["title"] == "浅草寺"
+    assert body["plan"]["itinerary"]["days"][0]["activities"][0]["title"] == "夫子庙-秦淮风光带"
 
 
 def test_manual_edit_can_add_a_known_place() -> None:
@@ -77,7 +77,7 @@ def test_manual_edit_can_add_a_known_place() -> None:
     edits.append(
         {
             "id": str(uuid4()),
-            "title": "明治神宫",
+            "title": "古鸡鸣寺",
             "start_time": "19:00",
             "end_time": "20:00",
             "removed": False,
@@ -97,4 +97,4 @@ def test_manual_edit_can_add_a_known_place() -> None:
     titles = [
         item["title"] for item in response.json()["plan"]["itinerary"]["days"][0]["activities"]
     ]
-    assert "明治神宫" in titles
+    assert "古鸡鸣寺" in titles

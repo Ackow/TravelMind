@@ -1,23 +1,29 @@
+from datetime import UTC, datetime
+
 from fastapi.testclient import TestClient
+
 from app.agent.feedback_parser import ParsedFeedback, SetMaxWalkingOp
 from app.agent.llm_client import FakeLLMClient
 from app.application.clock import FixedClock
 from app.fixtures.loader import load_tokyo_trip_request
 from app.infrastructure.memory_repository import InMemoryTravelRepository
 from app.main import create_app
-from datetime import UTC, datetime
 
 
 def test_natural_language_feedback_triggers_llm_and_creates_v2() -> None:
     # 准备 Fake LLM 返回解析操作
-    fake_llm = FakeLLMClient([
-        ParsedFeedback(
-            summary="将每日步行限制为 2 公里",
-            operations=[SetMaxWalkingOp(op="set_max_walking", meters_per_day=2000, reason="用户反馈")],
-            affected_day_indices=[],
-            requires_clarification=False,
-        )
-    ])
+    fake_llm = FakeLLMClient(
+        [
+            ParsedFeedback(
+                summary="将每日步行限制为 2 公里",
+                operations=[
+                    SetMaxWalkingOp(op="set_max_walking", meters_per_day=2000, reason="用户反馈")
+                ],
+                affected_day_indices=[],
+                requires_clarification=False,
+            )
+        ]
+    )
 
     app = create_app(
         repository=InMemoryTravelRepository(),
@@ -29,7 +35,9 @@ def test_natural_language_feedback_triggers_llm_and_creates_v2() -> None:
     client = TestClient(app)
 
     # 1. 创建旅行
-    trip = client.post("/api/v1/trips", json=load_tokyo_trip_request().model_dump(mode="json")).json()
+    trip = client.post(
+        "/api/v1/trips", json=load_tokyo_trip_request().model_dump(mode="json")
+    ).json()
     base_url = f"/api/v1/trips/{trip['id']}"
 
     # 2. 生成版本 1

@@ -19,6 +19,9 @@ class TravelRepository(Protocol):
     def get_trip(self, trip_id: UUID) -> TripRecord | None:
         """按 ID 获取旅行记录，不存在时返回 None。"""
 
+    def list_trips(self, limit: int = 50) -> list[TripRecord]:
+        """按更新时间降序获取旅行记录列表。"""
+
     def save_trip(self, trip: TripRecord) -> None:
         """保存/更新一个已存在的旅行记录。"""
 

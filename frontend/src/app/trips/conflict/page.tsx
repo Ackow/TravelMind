@@ -6,5 +6,5 @@ export const metadata = {
 };
 
 export default function ConflictPage() {
-  return <ConflictResolution tripId="tokyo-5d" />;
+  return <ConflictResolution tripId="88888888-8888-8888-8888-888888888888" />;
 }

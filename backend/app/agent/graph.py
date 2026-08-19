@@ -1,7 +1,9 @@
 from functools import partial
+
 from langgraph.checkpoint.base import BaseCheckpointSaver
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import END, StateGraph
+
 from app.agent.edges import route_after_constraints, route_after_human_interrupt
 from app.agent.nodes.human import node_human_interrupt, node_prepare_review
 from app.agent.nodes.planning import node_build_candidate
